@@ -12,3 +12,309 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+// ===========
+// Enums
+//============
+
+enum Role {
+  USER
+  MODO
+  ADMIN
+}
+
+enum AddressType {
+  SHIPPING
+  BILLING
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum ProductCondition {
+  NEW
+  VERY_GOOD
+  GOOD
+  FAIR
+}
+
+enum ProductStatus {
+  AVAILABLE
+  ARCHIVED
+  PENDING
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  REJECTED
+}
+
+// ===========
+// Entitées
+//============
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  lastname   String
+  email      String   @unique
+  password   String
+  role       Role     @default(USER)
+  isActive   Boolean  @default(true) @map("is_active")
+  isVerified Boolean  @default(false) @map("is_verified")
+  weight     Float?
+  height     Float?
+  boxingType String?  @map("boxing_type")
+  avatarUrl  String?  @map("avatar_url")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  wallet        Wallet?
+  addresses     Address[]
+  bankAccounts  BankAccount[]
+  products      Product[]      @relation("SellerProducts")
+  orders        Order[]        @relation("BuyerOrders")
+  messages      Message[]      @relation("SenderMessages")
+  conversations Conversation[] @relation("BuyerConversations")
+  favorites     UserProduct[]
+  reports       Report[]       @relation("UserReports")
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  balance   Float    @default(0)
+  userId    String   @unique @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  amount      Float
+  type        TransactionType
+  description String?
+  walletId    String          @map("wallet_id")
+  orderId     String?         @map("order_id")
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  order  Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  reference   String      @unique
+  status      OrderStatus @default(PENDING_PAYMENT)
+  totalAmount Float       @map("total_amount")
+  offerId     String?     @unique @map("offer_id")
+  buyerId     String      @map("buyer_id")
+  addressId   String      @map("address_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  buyer        User          @relation("BuyerOrders", fields: [buyerId], references: [id])
+  address      Address       @relation(fields: [addressId], references: [id])
+  offer        Offer?        @relation(fields: [offerId], references: [id])
+  items        OrderItem[]
+  facture      Facture?
+  review       Review?
+  transactions Transaction[]
+}
+
+model OrderItem {
+  id                  String @id @default(uuid())
+  quantity            Int
+  unitPriceAtPurchase Float  @map("unit_price_at_purchase")
+  orderId             String @map("order_id")
+  productId           String @map("product_id")
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Facture {
+  id        String   @id @default(uuid())
+  reference String   @unique
+  client    String
+  path      String
+  orderId   String   @unique @map("order_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  orderId   String   @unique @map("order_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Address {
+  id             String      @id @default(uuid())
+  type           AddressType
+  streetNumber   String?     @map("street_number")
+  streetName     String      @map("street_name")
+  city           String
+  zipCode        String      @map("zip_code")
+  additionalInfo String?     @map("additional_info")
+  userId         String      @map("user_id")
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+}
+
+model BankAccount {
+  id        String  @id @default(uuid())
+  iban      String
+  bic       String
+  ownerName String  @map("owner_name")
+  isDefault Boolean @default(false) @map("is_default")
+  userId    String  @map("user_id")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  content        String
+  isRead         Boolean  @default(false) @map("is_read")
+  senderId       String   @map("sender_id")
+  conversationId String   @map("conversation_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  sender       User         @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  productId String   @map("product_id")
+  buyerId   String   @map("buyer_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  product  Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  buyer    User      @relation("BuyerConversations", fields: [buyerId], references: [id], onDelete: Cascade)
+  messages Message[]
+  offers   Offer[]
+  reports  Report[]
+
+  @@unique([productId, buyerId])
+}
+
+model Offer {
+  id             String      @id @default(uuid())
+  proposedPrice  Float       @map("proposed_price")
+  status         OfferStatus @default(PENDING)
+  conversationId String      @map("conversation_id")
+  productId      String      @map("product_id")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  product      Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order        Order?
+}
+
+model UserProduct {
+  userId    String @map("user_id")
+  productId String @map("product_id")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([userId, productId])
+  @@map("User_Product")
+}
+
+model Report {
+  id             String       @id @default(uuid())
+  content        String?
+  status         ReportStatus @default(OPEN)
+  userId         String       @map("user_id")
+  productId      String?      @map("product_id")
+  conversationId String?      @map("conversation_id")
+  typeReportId   String       @map("typeReport_id")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  resolvedAt     DateTime?    @map("resolved_at")
+
+  user         User          @relation("UserReports", fields: [userId], references: [id], onDelete: Cascade)
+  product      Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  typeReport   TypeReport    @relation(fields: [typeReportId], references: [id])
+}
+
+model TypeReport {
+  id    String @id @default(uuid())
+  label String @unique
+
+  reports Report[]
+}
+
+model Product {
+  id          String           @id @default(uuid())
+  title       String
+  description String
+  condition   ProductCondition
+  size        String?
+  price       Float
+  status      ProductStatus    @default(AVAILABLE)
+  sellerId    String           @map("seller_id")
+  categoryId  String           @map("category_id")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  seller        User           @relation("SellerProducts", fields: [sellerId], references: [id], onDelete: Cascade)
+  category      Category       @relation(fields: [categoryId], references: [id])
+  medias        Media[]
+  orderItems    OrderItem[]
+  conversations Conversation[]
+  offers        Offer[]
+  favoritedBy   UserProduct[]
+  reports       Report[]
+}
+
+model Media {
+  id        String @id @default(uuid())
+  path      String
+  productId String @map("product_id")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id       String  @id @default(uuid())
+  name     String
+  slug     String  @unique
+  parentId String? @map("parent_id")
+
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+  products Product[]
+}
