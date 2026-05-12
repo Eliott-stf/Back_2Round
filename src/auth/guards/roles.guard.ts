@@ -26,7 +26,7 @@ export class RolesGuard implements CanActivate {
         ]);
 
         //Si pas de roles sur la route : accessible à tous
-        if (!requiredRoles) return true;
+        if (!requiredRoles || requiredRoles.length === 0) return true;
 
         //On récupère l'utilisateur injecté dans la requête par Passport
         const { user } = context.switchToHttp().getRequest();

@@ -103,7 +103,7 @@ export class ProductsService {
         condition: true,
         size: true,
         price: true,
-        updated_at: true,
+        updatedAt: true,
       },
     });
     //on retourne les produits 
@@ -147,8 +147,7 @@ export class ProductsService {
    * @returns {Promise<{message: string}>} Un objet contenant un message de succès.
    */
   async create(userId: string, dto: CreateProductDto) {
-    const product = this.prisma.product.create({
-      //On récupère les datas et on les passe au dto (validator)
+    return await this.prisma.product.create({
       data: {
         title: dto.title,
         description: dto.description,
@@ -163,7 +162,6 @@ export class ProductsService {
         category: true,
       },
     });
-    return { message: 'Produit ajouté avec succès' };
   }
 
   /**

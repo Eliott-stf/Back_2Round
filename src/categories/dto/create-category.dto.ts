@@ -1,1 +1,15 @@
-export class CreateCategoryDto {}
+import { IsString, IsOptional, MinLength } from 'class-validator';
+
+export class CreateCategoryDto {
+  @IsString()
+  @MinLength(2)
+  name!: string;
+
+  @IsString()
+  @MinLength(2)
+  slug!: string;
+
+  @IsOptional()
+  @IsString()
+  parentId?: string;
+}
