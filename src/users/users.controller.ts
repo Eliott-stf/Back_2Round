@@ -1,8 +1,8 @@
 import { Controller, Get, Patch, Delete, Body, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Auth } from '../auth/decorators/auth.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Auth } from '../common/decorators/auth.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Role } from '../generated/prisma/enums';
 
 
@@ -10,7 +10,7 @@ import { Role } from '../generated/prisma/enums';
 @Controller('users')
 export class UsersController {
 
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   /**
    * GET /users/me

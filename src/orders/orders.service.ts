@@ -1,26 +1,263 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { calculateTotal, roundPrice } from '../common/utils/price.utils';
 
 @Injectable()
 export class OrdersService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  constructor(private readonly prisma: PrismaService) { }
+
+  /**
+   * Méthode pour lister toutes les Orders (ADMIN)
+   * @return Tab des orders
+   */
+  async findAll() {
+    return this.prisma.order.findMany({
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            name: true,
+            lastname: true,
+            email: true
+          },
+        },
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  findAll() {
-    return `This action returns all orders`;
+  /**
+   * Méthode pour afficher mes commandes en tant que Acheteur 
+   * @param {string} buyerId Id de l'acheteur
+   * @return Liste des commandes incluant les articles, les produits associés (avec médias) et l'adresse de livraison.
+   */
+  async findMyOrders(buyerId: string) {
+    return await this.prisma.order.findMany({
+      where: { id: buyerId },
+      include: {
+        items: {
+          include: {
+            product: {
+              include: { medias: true },
+            },
+          },
+        },
+        address: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  /**
+   * Méthode pour afficher mes vente en tant que vendeur 
+   * @param {string} sellerId Id du vendeur
+   * @returns Liste des ventes incluant les articles du vendeur, l'adresse et les informations publiques de l'acheteur.
+   */
+  async findMySales(sellerId: string) {
+    return this.prisma.order.findMany({
+      where: {
+        items: {
+          some: {
+            product: { sellerId },
+          },
+        },
+      },
+      include: {
+        items: {
+          where: { product: { sellerId } },
+          include: { product: { include: { medias: true } } },
+        },
+        buyer: {
+          select: { id: true, name: true, lastname: true, avatarUrl: true },
+        },
+        address: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  /**
+   * Méthode pour créer une Order
+   */
+  async create(buyerId: string, dto: CreateOrderDto) {
+    // 1/ On récupére tous les produits commandés. 
+    const productIds = dto.items.map(i => i.productId);
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+    });
+
+    // 2/ On vérifie que tous les produits existent et sont disponibles
+    for (const item of dto.items) {
+      const product = products.find(p => p.id === item.productId);
+      if (!product) throw new NotFoundException(`Produit ${item.productId} introuvable`);
+      if (product.status !== 'AVAILABLE') throw new BadRequestException(`Produit ${product.title} non disponible`);
+    }
+
+    // 3/ On calcul le prix total avec l'utils
+    const totalAmount = roundPrice(calculateTotal(dto.items, products));
+
+    // 4/ On vérifie le solde du wallet acheteur
+    const buyerWallet = await this.prisma.wallet.findUnique({
+      where: { userId: buyerId },
+    });
+
+    //Si fond insuffisant.... 
+    if (!buyerWallet || buyerWallet.balance < totalAmount) {
+      throw new BadRequestException('Solde insuffisant');
+    }
+
+    // for (const item of dto.items) {
+    //   const product = products.find(p => p.id === item.productId);
+    //   if (product.sellerId === buyerId) {
+    //     throw new BadRequestException('Vous ne pouvez pas acheter votre propre produit');
+    //   }
+    // }
+
+    // 5/ Tout dans une transaction Prisma
+    const order = await this.prisma.$transaction(async (tx) => {
+      // Créer la commande
+      const order = await tx.order.create({
+        data: {
+          reference: `2R-${Date.now()}`,
+          totalAmount,
+          buyerId,
+          addressId: dto.addressId,
+          status: 'PAID',
+          items: {
+            create: dto.items.map(item => {
+              const product = products.find(p => p.id === item.productId)!;
+              return {
+                productId: item.productId,
+                quantity: item.quantity,
+                unitPriceAtPurchase: product.price,
+              };
+            }),
+          },
+        },
+        include: {
+          items: { include: { product: true } },
+          address: true,
+        },
+      });
+
+      // ON débite le wallet acheteur
+      await tx.wallet.update({
+        where: { userId: buyerId },
+        data: { balance: { decrement: totalAmount } },
+      });
+
+      // On crédite le wallet de chaque vendeur si pack multi vendeur 
+      for (const item of dto.items) {
+        const product = products.find(p => p.id === item.productId)!;
+        const amount = product.price * item.quantity;
+
+        await tx.wallet.update({
+          where: { userId: product.sellerId },
+          data: { balance: { increment: amount } },
+        });
+
+        // Transaction wallet vendeur
+        await tx.transaction.create({
+          data: {
+            amount,
+            type: 'CREDIT',
+            description: `Vente : ${product.title}`,
+            walletId: (await tx.wallet.findUnique({ where: { userId: product.sellerId } }))!.id,
+            orderId: order.id,
+          },
+        });
+      }
+
+      // Transaction wallet acheteur
+      await tx.transaction.create({
+        data: {
+          amount: totalAmount,
+          type: 'DEBIT',
+          description: `Commande ${order.reference}`,
+          walletId: buyerWallet.id,
+          orderId: order.id,
+        },
+      });
+
+      // Passer les produits en vendu 
+      await tx.product.updateMany({
+        where: { id: { in: productIds } },
+        data: { status: 'ARCHIVED' },
+      });
+
+      return order;
+    });
+
+    return order;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  /**
+   * Méthode pour afficher le détail d'un commande 
+   * @param {string} userId Id de l'user
+   * @param {string} orderId Id de l'order
+   * @return La commande complete 
+   */
+  async findOne(userId: string, orderId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        items: {
+          include: {
+            product: { include: { medias: true } },
+          },
+        },
+        address: true,
+        buyer: {
+          select: { id: true, name: true, lastname: true },
+        },
+      },
+    });
+
+    //On vérifie qu'on l'a trouvée 
+    if (!order) throw new NotFoundException('Commande introuvable');
+
+    // On vérifie que l'user est bien l'acheteur ou vendeur de cette commande
+    const isBuyer = order.buyerId === userId;
+    const isSeller = order.items.some(i => i.product.sellerId === userId);
+
+    if (!isBuyer && !isSeller) {
+      throw new ForbiddenException('Accès refusé');
+    }
+
+    return order;
+  }
+
+  /**
+   * Méthode pour annulé un commande 
+   * @param {string} userId Id de l'user
+   * @param {string} orderId Id de la commande
+   * @returns L'entité commande mutée avec le statut 'CANCELLED'.
+   */
+  async cancel(userId: string, orderId: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: { include: { product: true } } },
+    });
+
+    //On vérifie si elle existe 
+    if (!order) throw new NotFoundException('Commande introuvable');
+
+    //On vérifie que l'user soit l'acheteur de cette commande 
+    if (order.buyerId !== userId) throw new ForbiddenException('Accès refusé');
+    if (order.status !== 'PENDING_PAYMENT') {
+      throw new BadRequestException('Cette commande ne peut pas être annulée');
+    }
+
+    //On met a jour le status 
+    return this.prisma.order.update({
+      where: { id: orderId },
+      data: { status: 'CANCELLED' },
+    });
   }
 }

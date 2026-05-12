@@ -16,7 +16,7 @@ export function Auth(...roles: Role[]) {
   return applyDecorators(
     //On set les datas qui seront lues par les guards
     SetMetadata(ROLES_KEY, roles),
-    
+
     //On applique les guards dans l'ordre
     UseGuards(JwtAuthGuard, RolesGuard),
     //TODO: Api 

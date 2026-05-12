@@ -1,34 +1,88 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { Role } from '../generated/prisma/enums';
+import { Auth } from '../common/decorators/auth.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
 
+  constructor(private readonly ordersService: OrdersService) { }
+
+  /**
+    * POST /orders
+    * Initialise le processus d'achat (création de commande et transactions).
+    * Requis : Utilisateur authentifié.
+    */
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  @Auth()
+  create(
+    @CurrentUser() user: any,
+    @Body() dto: CreateOrderDto,
+  ) {
+    return this.ordersService.create(user.id, dto);
   }
 
+  /**
+   * GET /orders
+   * Récupère l'historique des achats de l'utilisateur connecté.
+   * @Auth USER : Utilisateur authentifié.
+   */
   @Get()
+  @Auth()
+  findMyOrders(@CurrentUser() user: any) {
+    return this.ordersService.findMyOrders(user.id);
+  }
+
+  /**
+   * GET /orders/selling
+   * Récupère la liste des ventes générées par l'utilisateur connecté.
+   * @Auth USER : Utilisateur authentifié.
+   */
+  @Get('selling')
+  @Auth()
+  findMySales(@CurrentUser() user: any) {
+    return this.ordersService.findMySales(user.id);
+  }
+
+  /**
+   * GET /orders/all
+   * Vue globale de l'intégralité des commandes de la plateforme.
+   * @Auth Rôle ADMINISTRATEUR.
+   */
+  @Get('all')
+  @Auth(Role.ADMIN)
   findAll() {
     return this.ordersService.findAll();
   }
 
+  /**
+   * GET /orders/:id
+   * Affiche les détails d'une commande précise.
+   * @Auth USER : Utilisateur authentifié.
+   */
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
+  @Auth()
+  findOne(
+    @CurrentUser() user: any,
+    @Param('id') id: string,
+  ) {
+    return this.ordersService.findOne(user.id, id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(+id, updateOrderDto);
+  /**
+   * PATCH /orders/:id/cancel
+   * Interrompt et annule une commande avant traitement.
+   * @Auth USER : Utilisateur authentifié.
+   */
+  @Patch(':id/cancel')
+  @Auth()
+  cancel(
+    @CurrentUser() user: any,
+    @Param('id') id: string,
+  ) {
+    return this.ordersService.cancel(user.id, id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ordersService.remove(+id);
-  }
 }

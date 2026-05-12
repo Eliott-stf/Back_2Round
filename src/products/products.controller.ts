@@ -4,8 +4,8 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { Role } from '../generated/prisma/enums';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { Auth } from '../auth/decorators/auth.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { Auth } from '../common/decorators/auth.decorator';
 
 @Controller('products')
 export class ProductsController {
