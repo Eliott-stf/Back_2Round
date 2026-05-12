@@ -2,8 +2,6 @@ import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Get } from '@n
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from './guards/jwt.guard';
-import { CurrentUser } from './decorators/current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
