@@ -18,8 +18,10 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // Wallet pour John Doe
-  await prisma.wallet.create({
-    data: {
+  await prisma.wallet.upsert({
+    where: { userId: 'fdb641a5-61bc-4be4-a74f-d46c7e3e094b' },
+    update: { balance: 500 },
+    create: {
       balance: 500,
       userId: 'fdb641a5-61bc-4be4-a74f-d46c7e3e094b',
     },
@@ -37,6 +39,27 @@ async function main() {
   });
 
   console.log('Seed terminé ✅');
+
+  //Adresse pour mike
+  await prisma.address.create({
+    data: {
+      type: 'SHIPPING',
+      streetName: 'Rue du Combat',
+      city: 'Paris',
+      zipCode: '75001',
+      userId: '6dbaaaaa-c3f0-4be2-b596-7f14d3c3bc3f',
+    },
+  });
+
+  // Wallet pour Mike
+  await prisma.wallet.upsert({
+    where: { userId: '6dbaaaaa-c3f0-4be2-b596-7f14d3c3bc3f' },
+    update: { balance: 1000 },
+    create: {
+      balance: 1000,
+      userId: '6dbaaaaa-c3f0-4be2-b596-7f14d3c3bc3f',
+    },
+  });
 }
 
 main()

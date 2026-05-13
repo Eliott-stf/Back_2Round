@@ -151,13 +151,14 @@ export class OrdersService {
           buyerId,
           addressId: dto.addressId,
           status: 'PAID',
+          ...(dto.offerId && { offerId: dto.offerId }), 
           items: {
             create: dto.items.map(item => {
               const product = products.find(p => p.id === item.productId)!;
               return {
                 productId: item.productId,
                 quantity: item.quantity,
-                unitPriceAtPurchase: product.price,
+                unitPriceAtPurchase: offerPrice ?? product.price,
               };
             }),
           },
@@ -177,7 +178,7 @@ export class OrdersService {
       // On crédite le wallet de chaque vendeur si pack multi vendeur 
       for (const item of dto.items) {
         const product = products.find(p => p.id === item.productId)!;
-        const amount = product.price * item.quantity;
+        const amount = roundPrice(offerPrice ?? product.price * item.quantity);
 
         await tx.wallet.update({
           where: { userId: product.sellerId },
