@@ -99,8 +99,30 @@ export class OrdersService {
       if (product.status !== 'AVAILABLE') throw new BadRequestException(`Produit ${product.title} non disponible`);
     }
 
-    // 3/ On calcul le prix total avec l'utils
-    const totalAmount = roundPrice(calculateTotal(dto.items, products));
+    // 3/ Si une offre a été acceptée on modifie le prix 
+
+    //initialise le prix
+    let offerPrice: number | null = null;
+
+    // Vérifie si le dto contient l'ID de l'offre
+    if (dto.offerId) {
+      // On récup l'offre en bdd
+      const offer = await this.prisma.offer.findUnique({
+        where: { id: dto.offerId },
+        include: { conversation: true },
+      });
+
+      //On vérifie que l'offre existe, qu'elle a été acceptée, et que ce soit bien SON offre
+      if (!offer) throw new NotFoundException('Offre introuvable');
+      if (offer.status !== 'ACCEPTED') throw new BadRequestException('Cette offre n\'est pas acceptée');
+      if (offer.conversation.buyerId !== buyerId) throw new ForbiddenException('Accès refusé');
+
+      //On met a jour le prxi avec celui de l'offre
+      offerPrice = offer.proposedPrice;
+    }
+
+    // On calcule le prix total: prix négocié si offre, sinon prix normal
+    const totalAmount = roundPrice(offerPrice ?? calculateTotal(dto.items, products));
 
     // 4/ On vérifie le solde du wallet acheteur
     const buyerWallet = await this.prisma.wallet.findUnique({

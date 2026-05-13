@@ -33,7 +33,6 @@ enum OfferStatus {
   PENDING
   ACCEPTED
   DECLINED
-  EXPIRED
 }
 
 enum OrderStatus {
