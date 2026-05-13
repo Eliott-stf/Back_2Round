@@ -15,9 +15,10 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { ReportsModule } from './reports/reports.module';
 import { MediaModule } from './media/media.module';
 import { TypeReportsModule } from './type-reports/type-reports.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule],
+  imports: [PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule],
   controllers: [AppController],
   providers: [AppService],
 })
