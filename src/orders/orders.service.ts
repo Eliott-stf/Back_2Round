@@ -2,10 +2,16 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { calculateTotal, roundPrice } from '../common/utils/price.utils';
+import { WalletService } from '../wallet/wallet.service';
+import { TransactionsService } from '../transactions/transactions.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly walletService: WalletService,
+    private readonly transactionsService: TransactionsService,
+  ) { }
 
   /**
    * Méthode pour lister toutes les Orders (ADMIN)
@@ -86,6 +92,7 @@ export class OrdersService {
    * Méthode pour créer une Order
    */
   async create(buyerId: string, dto: CreateOrderDto) {
+
     // 1/ On récupére tous les produits commandés. 
     const productIds = dto.items.map(i => i.productId);
     const products = await this.prisma.product.findMany({
@@ -100,7 +107,6 @@ export class OrdersService {
     }
 
     // 3/ Si une offre a été acceptée on modifie le prix 
-
     //initialise le prix
     let offerPrice: number | null = null;
 
@@ -124,15 +130,9 @@ export class OrdersService {
     // On calcule le prix total: prix négocié si offre, sinon prix normal
     const totalAmount = roundPrice(offerPrice ?? calculateTotal(dto.items, products));
 
-    // 4/ On vérifie le solde du wallet acheteur
-    const buyerWallet = await this.prisma.wallet.findUnique({
-      where: { userId: buyerId },
-    });
+    // 4/ On vérifie le solde du wallet acheteur avec walletService 
+    const buyerWallet = await this.walletService.checkBalance(buyerId, totalAmount);
 
-    //Si fond insuffisant.... 
-    if (!buyerWallet || buyerWallet.balance < totalAmount) {
-      throw new BadRequestException('Solde insuffisant');
-    }
 
     // for (const item of dto.items) {
     //   const product = products.find(p => p.id === item.productId);
@@ -141,9 +141,8 @@ export class OrdersService {
     //   }
     // }
 
-    // 5/ Tout dans une transaction Prisma
+    // 5/ On créer l'order en BDD
     const order = await this.prisma.$transaction(async (tx) => {
-      // Créer la commande
       const order = await tx.order.create({
         data: {
           reference: `2R-${Date.now()}`,
@@ -151,7 +150,7 @@ export class OrdersService {
           buyerId,
           addressId: dto.addressId,
           status: 'PAID',
-          ...(dto.offerId && { offerId: dto.offerId }), 
+          ...(dto.offerId && { offerId: dto.offerId }),
           items: {
             create: dto.items.map(item => {
               const product = products.find(p => p.id === item.productId)!;
@@ -169,43 +168,34 @@ export class OrdersService {
         },
       });
 
-      // ON débite le wallet acheteur
-      await tx.wallet.update({
-        where: { userId: buyerId },
-        data: { balance: { decrement: totalAmount } },
-      });
+      // ON délégue le debit du wallet de l'acheteur avec walletService
+      await this.walletService.debit(tx, buyerId, totalAmount);
 
       // On crédite le wallet de chaque vendeur si pack multi vendeur 
       for (const item of dto.items) {
         const product = products.find(p => p.id === item.productId)!;
         const amount = roundPrice(offerPrice ?? product.price * item.quantity);
 
-        await tx.wallet.update({
-          where: { userId: product.sellerId },
-          data: { balance: { increment: amount } },
-        });
+        // ON délégue le crédit du wallet du vendeur avec walletService
+        const sellerWallet = await this.walletService.credit(tx, product.sellerId, amount);
 
-        // Transaction wallet vendeur
-        await tx.transaction.create({
-          data: {
-            amount,
-            type: 'CREDIT',
-            description: `Vente : ${product.title}`,
-            walletId: (await tx.wallet.findUnique({ where: { userId: product.sellerId } }))!.id,
-            orderId: order.id,
-          },
+        // Délégation de la transaction vendeur en utilisant transactionService
+        await this.transactionsService.create(tx, {
+          amount,
+          type: 'CREDIT',
+          description: `Vente : ${product.title}`,
+          walletId: sellerWallet.id,
+          orderId: order.id,
         });
       }
 
-      // Transaction wallet acheteur
-      await tx.transaction.create({
-        data: {
-          amount: totalAmount,
-          type: 'DEBIT',
-          description: `Commande ${order.reference}`,
-          walletId: buyerWallet.id,
-          orderId: order.id,
-        },
+      // Délégation de la transaction acheteur a transactionService
+      await this.transactionsService.create(tx, {
+        amount: totalAmount,
+        type: 'DEBIT',
+        description: `Commande ${order.reference}`,
+        walletId: buyerWallet.id,
+        orderId: order.id,
       });
 
       // Passer les produits en vendu 

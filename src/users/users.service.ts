@@ -15,7 +15,7 @@ export class UsersService {
   async findMe(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      //on récupères ses wallets et adresses en plus
+      //on récupères son wallet et adresses en plus
       include: {
         addresses: true,
         wallet: true,
