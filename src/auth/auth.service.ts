@@ -4,11 +4,16 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
+import { WalletService } from '../wallet/wallet.service';
 
 @Injectable()
 export class AuthService {
-  //constructeur Prisma (manager) et jwt
-  constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService) { }
+  //constructeur Prisma (manager) et jwt et wallet
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
+    private readonly walletService: WalletService, 
+  ) { }
 
   //========================
   //Méthode d'enregistrement 
@@ -39,6 +44,9 @@ export class AuthService {
       },
     });
 
+    //On créer son wallet automatiquement
+    await this.walletService.create(user.id);
+
     //On retourne le user sans le password
     const { password, ...result } = user;
     return result;
@@ -48,7 +56,7 @@ export class AuthService {
   //Méthode de Login
   //========================
 
-  async login(dto:LoginDto){
+  async login(dto: LoginDto) {
     //On va cherche le user rentré avec l'email
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
