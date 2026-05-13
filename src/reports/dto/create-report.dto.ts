@@ -12,4 +12,7 @@ export class CreateReportDto {
   @ValidateIf(o => !o.productId)
   @IsUUID()
   conversationId?: string;
+
+  @IsUUID()
+  typeReportId: string;
 }
