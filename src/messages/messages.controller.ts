@@ -1,34 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
+import { Auth } from '../common/decorators/auth.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
-@Controller('messages')
+
+@Controller('conversations/:conversationId/messages')
 export class MessagesController {
+
   constructor(private readonly messagesService: MessagesService) {}
 
+  /**
+   * POST /conversations/:conversationId/messages
+   * Transmet un nouveau message au sein d'une conversation spécifique
+   * @Auth Utilisateur authentifié.
+   */
   @Post()
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messagesService.create(createMessageDto);
+  @Auth()
+  send(
+    @CurrentUser() user: any,
+    @Param('conversationId') conversationId: string,
+    @Body() dto: CreateMessageDto,
+  ) {
+    return this.messagesService.send(user.id, conversationId, dto);
   }
 
-  @Get()
-  findAll() {
-    return this.messagesService.findAll();
+  /**
+   * POST /conversations/:conversationId/messages/read
+   * Actualise le statut des messages reçus de la conversation en "lus"
+   * @Auth Utilisateur authentifié.
+   */
+  @Post('read')
+  @Auth()
+  markAsRead(
+    @CurrentUser() user: any,
+    @Param('conversationId') conversationId: string,
+  ) {
+    return this.messagesService.markAsRead(user.id, conversationId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.messagesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(+id, updateMessageDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messagesService.remove(+id);
-  }
 }
