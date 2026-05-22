@@ -17,9 +17,10 @@ import { MediaModule } from './media/media.module';
 import { TypeReportsModule } from './type-reports/type-reports.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { AddressModule } from './address/address.module';
+import { BankAccountModule } from './bank-account/bank-account.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule],
+  imports: [PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule, BankAccountModule],
   controllers: [AppController],
   providers: [AppService],
 })
