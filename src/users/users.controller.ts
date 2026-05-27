@@ -1,9 +1,14 @@
-import { Controller, Get, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Patch, Delete, Body, Param, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Auth } from '../common/decorators/auth.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Role } from '../generated/prisma/enums';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 
@@ -84,6 +89,30 @@ export class UsersController {
     @Param('id') userId: string,
   ) {
     return this.usersService.ban(admin.id, userId);
+  }
+
+  @Patch('me/avatar')
+  @Auth()
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: './public/uploads/avatars',
+      filename: (req, file, cb) => {
+        const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
+        cb(null, uniqueName);
+      },
+    }),
+    fileFilter: (req, file, cb) => {
+      const allowed = ['.jpg', '.jpeg', '.png', '.webp'];
+      const ext = extname(file.originalname).toLowerCase();
+      if (!allowed.includes(ext)) return cb(new Error('Type non autorisé'), false);
+      cb(null, true);
+    },
+  }))
+  async uploadAvatar(
+    @CurrentUser() user: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.usersService.updateAvatar(user.id, `/uploads/avatars/${file.filename}`);
   }
 
 }

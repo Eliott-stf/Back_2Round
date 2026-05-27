@@ -5,9 +5,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Limite de taille des requêtes
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,      // supprime les champs non déclarés dans le DTO
@@ -16,7 +21,9 @@ async function bootstrap() {
   }));
 
   // Helmet pour sécuriser les headers HTTP
-  app.use(helmet());
+  app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 
   // CORS pour autorise le front React
   app.enableCors({

@@ -38,25 +38,26 @@ export class ProductsService {
    * @returns Un objet contenant les produits correspondants
    */
   async findAll(filters: FilterProductDto) {
-    const { search, categoryId, condition, minPrice, maxPrice, page = 1, limit = 20 } = filters;
+    const { search, categoryId, condition, minPrice, maxPrice, page = 1, limit = 20 , sellerId} = filters;
 
     const where: any = {
-      status: 'AVAILABLE',
-      ...(search && {
-        OR: [
-          { title: { contains: search } },
-          { description: { contains: search } },
-        ],
-      }),
-      ...(categoryId && { categoryId }),
-      ...(condition && { condition }),
-      ...((minPrice || maxPrice) && {
-        price: {
-          ...(minPrice && { gte: minPrice }),
-          ...(maxPrice && { lte: maxPrice }),
-        },
-      }),
-    };
+  status: 'AVAILABLE',
+  ...(sellerId && { sellerId }), 
+  ...(search && {
+    OR: [
+      { title: { contains: search } },
+      { description: { contains: search } },
+    ],
+  }),
+  ...(categoryId && { categoryId }),
+  ...(condition && { condition }),
+  ...((minPrice || maxPrice) && {
+    price: {
+      ...(minPrice && { gte: minPrice }),
+      ...(maxPrice && { lte: maxPrice }),
+    },
+  }),
+};
 
     const [total, products] = await Promise.all([
       this.prisma.product.count({ where }),

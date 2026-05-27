@@ -41,6 +41,9 @@ export class AuthService {
         lastname: dto.lastname,
         email: dto.email,
         password: hashedPassword,
+        weight: dto.weight,
+        height: dto.height,
+        boxingType: dto.boxingType,
       },
     });
 
