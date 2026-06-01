@@ -133,6 +133,7 @@ async function main() {
     create: { name: 'Casques', slug: 'casques' },
   });
 
+  // PRODUIT 1 : Gants - Vendeur John
   const product1 = await prisma.product.create({
     data: {
       title: 'Gants Everlast Pro 14oz',
@@ -145,6 +146,7 @@ async function main() {
     },
   });
 
+  // PRODUIT 2 : Casque - Vendeur Mike
   const product2 = await prisma.product.create({
     data: {
       title: 'Casque Rival RHG20',
@@ -153,6 +155,31 @@ async function main() {
       price: 80,
       sellerId: mike.id,
       categoryId: catCasques.id,
+    },
+  });
+
+  // PRODUIT 3 : Casque - Vendeur John (Nouveau)
+  const product3 = await prisma.product.create({
+    data: {
+      title: 'Casque Venum Elite',
+      description: 'Casque noir, très peu servi, excellente protection.',
+      condition: 'GOOD',
+      price: 65,
+      sellerId: john.id,
+      categoryId: catCasques.id,
+    },
+  });
+
+  // PRODUIT 4 : Gants - Vendeur Mike (Nouveau)
+  const product4 = await prisma.product.create({
+    data: {
+      title: 'Gants Cleto Reyes 16oz',
+      description: 'Gants d\'entraînement professionnels.',
+      condition: 'GOOD',
+      size: '16oz',
+      price: 120,
+      sellerId: mike.id,
+      categoryId: catGants.id,
     },
   });
 

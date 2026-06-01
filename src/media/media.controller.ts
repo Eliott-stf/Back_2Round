@@ -22,7 +22,7 @@ export class MediaController {
   @Auth()
   @UseInterceptors(FilesInterceptor('files', 5, {
     storage: diskStorage({
-      destination: './public/uploads',
+      destination: './public/uploads/products',
       filename: (req, file, cb) => {
         const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
         cb(null, uniqueName);

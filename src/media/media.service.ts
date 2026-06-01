@@ -7,7 +7,7 @@ import * as path from 'path';
 @Injectable()
 export class MediaService {
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   // Upload images pour un produit
   async uploadProductImages(userId: string, productId: string, files: Express.Multer.File[]) {
@@ -25,7 +25,7 @@ export class MediaService {
       files.map(file =>
         this.prisma.media.create({
           data: {
-            path: `/uploads/${file.filename}`,
+            path: `/uploads/products/${file.filename}`,
             productId,
           },
         })

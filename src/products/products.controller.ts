@@ -49,7 +49,7 @@ export class ProductsController {
    * @Auth Role.USER Seul un utilisateur connecté peut modifier un produit
    * @param id id du produit 
    */
-  @Patch()
+  @Patch(':id')
   @Auth()
   update(
     @CurrentUser() user: any,
