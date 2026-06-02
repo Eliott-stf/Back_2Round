@@ -20,6 +20,7 @@ import { AddressModule } from './address/address.module';
 import { BankAccountModule } from './bank-account/bank-account.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { APP_GUARD } from '@nestjs/core';
       ttl: 60000,
       limit: 30,
     }]),
-    PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule, BankAccountModule],
+    PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule, BankAccountModule, PaymentsModule],
   controllers: [AppController],
   providers: [
     AppService,

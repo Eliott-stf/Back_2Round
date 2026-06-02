@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { FilterProductDto } from './dto/filter-product.dto';
 
 @Injectable()
@@ -38,26 +37,27 @@ export class ProductsService {
    * @returns Un objet contenant les produits correspondants
    */
   async findAll(filters: FilterProductDto) {
-    const { search, categoryId, condition, minPrice, maxPrice, page = 1, limit = 20 , sellerId} = filters;
+    const { search, categoryId, condition, minPrice, maxPrice, page = 1, limit = 20, sellerId } = filters;
 
     const where: any = {
-  status: 'AVAILABLE',
-  ...(sellerId && { sellerId }), 
-  ...(search && {
-    OR: [
-      { title: { contains: search } },
-      { description: { contains: search } },
-    ],
-  }),
-  ...(categoryId && { categoryId }),
-  ...(condition && { condition }),
-  ...((minPrice || maxPrice) && {
-    price: {
-      ...(minPrice && { gte: minPrice }),
-      ...(maxPrice && { lte: maxPrice }),
-    },
-  }),
-};
+      ...(sellerId
+        ? { sellerId, status: { in: ['AVAILABLE', 'ARCHIVED'] } }
+        : { status: 'AVAILABLE' }),
+      ...(search && {
+        OR: [
+          { title: { contains: search } },
+          { description: { contains: search } },
+        ],
+      }),
+      ...(categoryId && { categoryId }),
+      ...(condition && { condition }),
+      ...((minPrice || maxPrice) && {
+        price: {
+          ...(minPrice && { gte: minPrice }),
+          ...(maxPrice && { lte: maxPrice }),
+        },
+      }),
+    };
 
     const [total, products] = await Promise.all([
       this.prisma.product.count({ where }),
@@ -139,7 +139,6 @@ export class ProductsService {
     if (!product) throw new NotFoundException('Produit introuvable');
     return product;
   }
-
 
   /**
    * Méthode pour créer un produit

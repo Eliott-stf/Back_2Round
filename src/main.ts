@@ -8,10 +8,17 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import express from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    rawBody: true,
+  });
 
   // Limite de taille des requêtes
-  app.use(express.json({ limit: '10mb' }));
+  app.use(express.json({
+    limit: '10mb',
+    verify: (req: any, res, buf) => {
+      req.rawBody = buf;
+    }
+  }));
   app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
   app.useGlobalPipes(new ValidationPipe({
@@ -22,8 +29,8 @@ async function bootstrap() {
 
   // Helmet pour sécuriser les headers HTTP
   app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' },
-}));
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  }));
 
   // CORS pour autorise le front React
   app.enableCors({
