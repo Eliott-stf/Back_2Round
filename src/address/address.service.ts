@@ -4,7 +4,7 @@ import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 
 @Injectable()
-export class AddressesService {
+export class AddressService {
 
   constructor(private readonly prisma: PrismaService) {}
 

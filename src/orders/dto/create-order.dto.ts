@@ -1,4 +1,4 @@
-import { IsString, IsArray, ValidateNested, IsInt, IsPositive, IsOptional } from 'class-validator';
+import { IsString, IsArray, ValidateNested, IsInt, IsPositive, IsOptional, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class OrderItemDto {
@@ -17,7 +17,12 @@ export class CreateOrderDto {
   items!: OrderItemDto[];
 
   @IsString()
-  addressId!: string;
+  @IsNotEmpty()
+  shippingAddressId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  billingAddressId!: string;
 
   @IsOptional()
   @IsString()

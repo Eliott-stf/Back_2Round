@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AddressesController } from './address.controller';
-import { AddressesService } from './address.service';
+import { AddressService } from './address.service';
 
 
 @Module({
   controllers: [AddressesController],
-  providers: [AddressesService],
+  providers: [AddressService],
 })
 export class AddressModule {}

@@ -29,8 +29,7 @@ export type AddressType = (typeof AddressType)[keyof typeof AddressType]
 export const OfferStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
-  DECLINED: 'DECLINED',
-  EXPIRED: 'EXPIRED'
+  DECLINED: 'DECLINED'
 } as const
 
 export type OfferStatus = (typeof OfferStatus)[keyof typeof OfferStatus]

@@ -32,6 +32,10 @@ export class PaymentsService {
 
         const pendingOrderId = randomUUID();
 
+        if (!orderDto.shippingAddressId || !orderDto.billingAddressId) {
+            throw new BadRequestException('Les adresses sont requises pour finaliser la commande');
+        }
+
         // Stockage du DTO en mémoire RAM
         this.pendingOrders.set(pendingOrderId, { buyerId, orderDto });
 
@@ -95,7 +99,7 @@ export class PaymentsService {
 
         const { buyerId, orderDto } = pendingData;
         //conversion en euro
-        const amountInEuros = paymentIntent.amount / 100; 
+        const amountInEuros = paymentIntent.amount / 100;
 
         // Traitement métier transactionnel
         // On crédite le wallet de l'acheteur

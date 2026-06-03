@@ -211,7 +211,8 @@ async function main() {
       status: 'DELIVERED',
       totalAmount: 45,
       buyerId: mike.id,
-      addressId: addressMike.id,
+      shippingAddressId: addressMike.id,
+      billingAddressId: addressMike.id,
     },
   });
 
@@ -221,7 +222,8 @@ async function main() {
       status: 'DELIVERED',
       totalAmount: 80,
       buyerId: john.id,
-      addressId: addressJohn.id,
+      shippingAddressId: addressJohn.id,
+      billingAddressId: addressJohn.id,
     },
   });
 

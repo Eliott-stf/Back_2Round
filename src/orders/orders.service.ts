@@ -54,7 +54,8 @@ export class OrdersService {
             },
           },
         },
-        address: true,
+        shippingAddress: true,
+        billingAddress: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -82,7 +83,8 @@ export class OrdersService {
         buyer: {
           select: { id: true, name: true, lastname: true, avatarUrl: true },
         },
-        address: true,
+        shippingAddress: true,
+        billingAddress: true,
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -148,7 +150,8 @@ export class OrdersService {
           reference: `2R-${Date.now()}`,
           totalAmount,
           buyerId,
-          addressId: dto.addressId,
+          shippingAddressId: dto.shippingAddressId,
+          billingAddressId: dto.billingAddressId,
           status: 'PAID',
           ...(dto.offerId && { offerId: dto.offerId }),
           items: {
@@ -164,7 +167,8 @@ export class OrdersService {
         },
         include: {
           items: { include: { product: true } },
-          address: true,
+          shippingAddress: true,
+          billingAddress: true,
         },
       });
 
@@ -225,7 +229,8 @@ export class OrdersService {
             product: { include: { medias: true } },
           },
         },
-        address: true,
+        shippingAddress: true,
+        billingAddress: true,
         buyer: {
           select: { id: true, name: true, lastname: true },
         },

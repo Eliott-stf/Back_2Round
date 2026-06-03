@@ -3,13 +3,13 @@ import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { Auth } from '../common/decorators/auth.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { AddressesService } from './address.service';
+import { AddressService } from './address.service';
 
 
 @Controller('addresses')
 export class AddressesController {
 
-  constructor(private readonly addressesService: AddressesService) {}
+  constructor(private readonly addressesService: AddressService) {}
 
   /**
    * POST /addresses

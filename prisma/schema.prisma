@@ -5,9 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-  moduleFormat = "cjs" 
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -124,23 +124,25 @@ model Transaction {
 }
 
 model Order {
-  id          String      @id @default(uuid())
-  reference   String      @unique
-  status      OrderStatus @default(PENDING_PAYMENT)
-  totalAmount Float       @map("total_amount")
-  offerId     String?     @unique @map("offer_id")
-  buyerId     String      @map("buyer_id")
-  addressId   String      @map("address_id")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
+  id                String        @id @default(uuid())
+  reference         String        @unique
+  status            OrderStatus   @default(PENDING_PAYMENT)
+  totalAmount       Float         @map("total_amount")
+  offerId           String?       @unique @map("offer_id")
+  buyerId           String        @map("buyer_id")
+  shippingAddressId String        @map("shipping_address_id")
+  billingAddressId  String        @map("billing_address_id")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
 
-  buyer        User          @relation("BuyerOrders", fields: [buyerId], references: [id])
-  address      Address       @relation(fields: [addressId], references: [id])
-  offer        Offer?        @relation(fields: [offerId], references: [id])
-  items        OrderItem[]
-  facture      Facture?
-  review       Review?
-  transactions Transaction[]
+  buyer           User          @relation("BuyerOrders", fields: [buyerId], references: [id])
+  offer           Offer?        @relation(fields: [offerId], references: [id])
+  shippingAddress Address       @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  billingAddress  Address       @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  items           OrderItem[]
+  facture         Facture?
+  review          Review?
+  transactions    Transaction[]
 }
 
 model OrderItem {
@@ -185,8 +187,9 @@ model Address {
   additionalInfo String?     @map("additional_info")
   userId         String      @map("user_id")
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders Order[]
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shippingOrders Order[]     @relation("ShippingAddress")
+  billingOrders  Order[]     @relation("BillingAddress")
 }
 
 model BankAccount {

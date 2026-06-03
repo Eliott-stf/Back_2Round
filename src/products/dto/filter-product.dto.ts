@@ -42,4 +42,8 @@ export class FilterProductDto {
   @IsOptional()
   @IsString()
   sellerId?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
 }

@@ -138,7 +138,8 @@ export const OrderScalarFieldEnum = {
   totalAmount: 'totalAmount',
   offerId: 'offerId',
   buyerId: 'buyerId',
-  addressId: 'addressId',
+  shippingAddressId: 'shippingAddressId',
+  billingAddressId: 'billingAddressId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -361,7 +362,8 @@ export const OrderOrderByRelevanceFieldEnum = {
   reference: 'reference',
   offerId: 'offerId',
   buyerId: 'buyerId',
-  addressId: 'addressId'
+  shippingAddressId: 'shippingAddressId',
+  billingAddressId: 'billingAddressId'
 } as const
 
 export type OrderOrderByRelevanceFieldEnum = (typeof OrderOrderByRelevanceFieldEnum)[keyof typeof OrderOrderByRelevanceFieldEnum]
