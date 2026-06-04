@@ -22,6 +22,26 @@ export class ProductsController {
   }
 
   /**
+   * GET /products/admin/all
+   * Liste complète pour le BackOffice (inclut les produits archivés et en attente)
+   */
+  @Get('admin/all')
+  @Auth(Role.ADMIN)
+  findAllForAdmin() {
+    return this.productsService.findAllForAdmin();
+  }
+
+  /**
+   * PATCH /products/admin/:id/toggle-archive
+   * Bascule le statut d'un produit (Archivé <-> Disponible)
+   */
+  @Patch('admin/:id/toggle-archive')
+  @Auth(Role.ADMIN)
+  toggleAdminArchive(@Param('id') id: string) {
+    return this.productsService.toggleAdminArchive(id);
+  }
+
+  /**
    * GET /products/:id
    * Detail d'un produit 
    * accessible a tous 

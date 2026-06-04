@@ -148,21 +148,24 @@ export class UsersService {
   }
 
   /**
-   * Méthode pour désactiver un compte (BAN)
+   * Méthode pour activer/désactiver un compte (Toggle BAN)
    * Pour les ADMIN 
    * @param adminId userId 
-   * @returns result
+   * @param userId 
    */
   async ban(adminId: string, userId: string) {
     //On vérifie que l'admin se ban pas lui meme....
     if (adminId === userId) {
-      throw new ForbiddenException('Vous ne pouvez pas vous bannir vous-même');
+      throw new ForbiddenException('Vous ne pouvez pas modifier votre propre statut');
     }
 
-    //On false isActive sur l'user
+    const targetUser = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!targetUser) throw new NotFoundException('Utilisateur introuvable');
+
+    // On inverse le statut actuel
     const user = await this.prisma.user.update({
       where: { id: userId },
-      data: { isActive: false },
+      data: { isActive: !targetUser.isActive },
     });
 
     const { password, ...result } = user;

@@ -93,6 +93,58 @@ export class ProductsService {
   }
 
   /**
+   * ADMIN : Récupère absolument tous les produits pour le BackOffice
+   */
+  async findAllForAdmin() {
+    const products = await this.prisma.product.findMany({
+      include: {
+        medias: true,
+        category: true,
+        seller: {
+          select: {
+            id: true,
+            name: true,
+            lastname: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return { data: products };
+  }
+
+  /**
+   * ADMIN : Bascule le statut d'un produit (ARCHIVED <-> AVAILABLE)
+   * On ne touche pas au statut PENDING ici, sauf si vous voulez le forcer.
+   */
+  async toggleAdminArchive(productId: string) {
+    const product = await this.prisma.product.findUnique({ where: { id: productId } });
+    if (!product) throw new NotFoundException('Produit introuvable');
+
+    const newStatus = product.status === 'ARCHIVED' ? 'AVAILABLE' : 'ARCHIVED';
+
+    const updated = await this.prisma.product.update({
+      where: { id: productId },
+      data: { status: newStatus },
+      include: {
+        medias: true,
+        category: true,
+        seller: {
+          select: {
+            id: true,
+            name: true,
+            lastname: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return { data: updated };
+  }
+
+  /**
    * Méthode pour avoir la liste des products
    * @returns Tableau contenant les produits
    */
