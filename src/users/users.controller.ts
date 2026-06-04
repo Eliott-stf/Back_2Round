@@ -31,6 +31,16 @@ export class UsersController {
   }
 
   /**
+   * GET /users/me/favorites
+   * Récupère la liste des produits favoris de l'utilisateur connecté
+   */
+  @Get('me/favorites')
+  @Auth()
+  findMyFavorites(@CurrentUser() user: any) {
+    return this.usersService.findMyFavorites(user.id);
+  }
+
+  /**
    * PATCH /users/me
    * Met à jour les informations de l'utilisateur connecté
    * @Body Récupère les données envoyées dans le corps de la requête HTTP

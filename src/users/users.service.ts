@@ -30,6 +30,40 @@ export class UsersService {
   }
 
   /**
+   * Récupère la liste des favoris de l'utilisateur
+   * @param userId 
+   */
+  async findMyFavorites(userId: string) {
+    const userWithFavorites = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        favorites: {
+          include: {
+            product: {
+              include: {
+                medias: true,
+                category: true,
+                seller: {
+                  select: {
+                    id: true,
+                    name: true,
+                    lastname: true,
+                    avatarUrl: true,
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!userWithFavorites) throw new NotFoundException('Utilisateur introuvable');
+
+    return userWithFavorites.favorites.map(f => f.product);
+  }
+
+  /**
    * Récupère le profil d'un autre utilisateur 
    * @param id 
    * @returns user
