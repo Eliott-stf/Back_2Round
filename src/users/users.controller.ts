@@ -66,6 +66,16 @@ export class UsersController {
   }
 
   /**
+   * GET /users/admin/:id
+   * Récupère le profil détaillé d'un utilisateur pour l'administration 
+   */
+  @Get('admin/:id')
+  @Auth(Role.ADMIN)
+  findOneForAdmin(@Param('id') id: string) {
+    return this.usersService.findOneForAdmin(id);
+  }
+
+  /**
    * GET /users/:id
    * Voir le profil d'un autre utilisateur 
    * @Params id : Récupère la valeur dynamique passée dans l'URL

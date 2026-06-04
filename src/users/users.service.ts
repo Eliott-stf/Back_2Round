@@ -93,6 +93,44 @@ export class UsersService {
   }
 
   /**
+   * ADMIN : Récupère le profil complet d'un utilisateur pour le BackOffice
+   * @param id Id de l'utilisateur
+   */
+  async findOneForAdmin(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        products: {
+          include: { medias: true, category: true },
+        },
+        favorites: {
+          include: {
+            product: {
+              include: {
+                medias: true,
+                category: true,
+                seller: {
+                  select: {
+                    id: true,
+                    name: true,
+                    lastname: true,
+                  }
+                }
+              }
+            }
+          }
+        },
+        addresses: true,
+        wallet: true,
+      }
+    });
+
+    if (!user) throw new NotFoundException('Utilisateur introuvable');
+    const { password, ...result } = user;
+    return result;
+  }
+
+  /**
    * Retourne la liste de tous les utilisateurs
    * Pour les ADMIN 
    */
