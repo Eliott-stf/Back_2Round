@@ -37,10 +37,9 @@ export class ProductsService {
    * @returns Un objet contenant les produits correspondants
    */
   async findAll(filters: FilterProductDto) {
-    const { search, categoryId, condition, minPrice, maxPrice, page = 1, limit = 20, sellerId, status } = filters;
+    const { search, categoryId, size, condition, minPrice, maxPrice, page = 1, limit = 20, sellerId, status } = filters;
 
     const where: any = {
-      // Application stricte du statut fourni, sinon application des règles par défaut
       status: status ? status : (sellerId ? { in: ['AVAILABLE', 'ARCHIVED'] } : 'AVAILABLE'),
       ...(sellerId && { sellerId }),
       ...(search && {
@@ -50,6 +49,7 @@ export class ProductsService {
         ],
       }),
       ...(categoryId && { categoryId }),
+      ...(size && { size }),
       ...(condition && { condition }),
       ...((minPrice || maxPrice) && {
         price: {

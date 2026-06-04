@@ -12,6 +12,10 @@ export class FilterProductDto {
   categoryId?: string;
 
   @IsOptional()
+  @IsString()
+  size?: string;
+
+  @IsOptional()
   @IsEnum(ProductCondition)
   condition?: ProductCondition;
 

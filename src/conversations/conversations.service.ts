@@ -4,7 +4,7 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 
 @Injectable()
 export class ConversationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Méthode pour récupèrer la liste des conversations de l'user
@@ -20,7 +20,14 @@ export class ConversationsService {
         ],
       },
       include: {
-        product: { include: { medias: true } },
+        product: {
+          include: {
+            medias: true,
+            seller: {
+              select: { id: true, name: true, lastname: true, avatarUrl: true }
+            }
+          }
+        },
         buyer: {
           select: { name: true, lastname: true, avatarUrl: true },
         },
@@ -66,7 +73,7 @@ export class ConversationsService {
 
     //Si la conversation n'existe pas
     if (!conversation) throw new NotFoundException('Conversation introuvable');
-    
+
     const isBuyer = conversation.buyerId === userId;
     const isSeller = conversation.product.sellerId === userId;
 
@@ -83,7 +90,7 @@ export class ConversationsService {
    * @returns L'entité conversation
    */
   async create(buyerId: string, dto: CreateConversationDto) {
-    
+
     //On va chercher le product avec son id en bdd
     const product = await this.prisma.product.findUnique({
       where: { id: dto.productId },

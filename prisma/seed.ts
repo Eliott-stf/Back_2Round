@@ -133,6 +133,30 @@ async function main() {
     create: { name: 'Casques', slug: 'casques' },
   });
 
+  const catChaussures = await prisma.category.upsert({
+    where: { slug: 'chaussures' },
+    update: {},
+    create: { name: 'Chaussures', slug: 'chaussures' },
+  });
+
+  const catHauts = await prisma.category.upsert({
+    where: { slug: 'hauts' },
+    update: {},
+    create: { name: 'Hauts', slug: 'hauts' },
+  });
+
+  const catShorts = await prisma.category.upsert({
+    where: { slug: 'shorts' },
+    update: {},
+    create: { name: 'Shorts', slug: 'shorts' },
+  });
+
+  const catProtections = await prisma.category.upsert({
+    where: { slug: 'protections' },
+    update: {},
+    create: { name: 'Protections', slug: 'protections' },
+  });
+
   // PRODUIT 1 : Gants - Vendeur John
   const product1 = await prisma.product.create({
     data: {

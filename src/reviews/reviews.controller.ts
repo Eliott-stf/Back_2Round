@@ -25,6 +25,17 @@ export class ReviewsController {
   }
 
   /**
+   * GET /reviews/order/:orderId
+   * Récupère l'avis associé à une commande
+   * @Auth Utilisateur authentifié 
+   */
+  @Get('order/:orderId')
+  @Auth()
+  findByOrder(@Param('orderId') orderId: string) {
+    return this.reviewsService.findByOrder(orderId);
+  }
+
+  /**
    * DELETE /reviews/:id
    * Supprime un avis 
    * @Auth Utilisateur authentifié 

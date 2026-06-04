@@ -5,7 +5,7 @@ import { CreateReviewDto } from './dto/create-review.dto';
 @Injectable()
 export class ReviewsService {
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Méthode pour lister tout les avis d'un user
@@ -34,6 +34,29 @@ export class ReviewsService {
         },
       },
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  /**
+   * Méthode pour récupérer l'avis d'une commande spécifique
+   * @param {string} orderId Id de la commande
+   * @returns {Promise<object | null>} L'avis incluant les détails de l'acheteur
+   */
+  async findByOrder(orderId: string) {
+    return this.prisma.review.findFirst({
+      where: { orderId },
+      include: {
+        order: {
+          include: {
+            buyer: {
+              select: { id: true, name: true, lastname: true, avatarUrl: true },
+            },
+            items: {
+              include: { product: { select: { title: true } } },
+            },
+          },
+        },
+      },
     });
   }
 

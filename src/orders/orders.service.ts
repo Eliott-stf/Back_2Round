@@ -45,7 +45,7 @@ export class OrdersService {
    */
   async findMyOrders(buyerId: string) {
     return await this.prisma.order.findMany({
-      where: { id: buyerId },
+      where: { buyerId }, // <--- CORRECTION ICI
       include: {
         items: {
           include: {
