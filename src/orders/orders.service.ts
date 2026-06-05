@@ -28,9 +28,23 @@ export class OrdersService {
             email: true
           },
         },
+        shippingAddress: true,
+        billingAddress: true,
         items: {
           include: {
-            product: true,
+            product: {
+              include: {
+                medias: true,
+                seller: {
+                  select: {
+                    id: true,
+                    name: true,
+                    lastname: true,
+                    email: true
+                  }
+                }
+              }
+            },
           },
         },
       },

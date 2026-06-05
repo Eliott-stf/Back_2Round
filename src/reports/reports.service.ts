@@ -67,8 +67,27 @@ export class ReportsService {
       include: {
         user: true,
         typeReport: true,
-        product: true,
-        conversation: true,
+        product: {
+          include: {
+            seller: true,
+            medias: true,
+          }
+        },
+        conversation: {
+          include: {
+            buyer: true,
+            product: {
+              include: {
+                seller: true,
+              }
+            },
+            messages: {
+              orderBy: {
+                createdAt: 'asc'
+              }
+            }
+          }
+        },
       },
     });
 
