@@ -66,6 +66,16 @@ export class UsersController {
   }
 
   /**
+   * GET /users/admin/dashboard/stats
+   * Récupère les statistiques globales du tableau de bord pour l'administration
+   */
+  @Get('admin/dashboard/stats')
+  @Auth(Role.ADMIN)
+  getDashboardStats() {
+    return this.usersService.getDashboardStats();
+  }
+
+  /**
    * GET /users/admin/:id
    * Récupère le profil détaillé d'un utilisateur pour l'administration 
    */

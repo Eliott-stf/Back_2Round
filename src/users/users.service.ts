@@ -219,4 +219,135 @@ export class UsersService {
     return result;
   }
 
+  async getDashboardStats() {
+    // 1. Nombre total d'utilisateurs & nouveaux de la semaine
+    const totalUsers = await this.prisma.user.count();
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const newUsersThisWeek = await this.prisma.user.count({
+      where: {
+        createdAt: {
+          gte: oneWeekAgo,
+        },
+      },
+    });
+
+    // 2. Nombre total de produits & produits actifs (disponibles)
+    const totalProducts = await this.prisma.product.count();
+    const activeProducts = await this.prisma.product.count({
+      where: {
+        status: 'AVAILABLE',
+      },
+    });
+
+    // 3. Commandes & chiffre d'affaires cumulé (somme des commandes valides)
+    const totalOrders = await this.prisma.order.count();
+    const completedOrders = await this.prisma.order.findMany({
+      where: {
+        status: {
+          in: ['PAID', 'SHIPPED', 'DELIVERED'],
+        },
+      },
+      select: {
+        totalAmount: true,
+      },
+    });
+    const totalSalesVolume = completedOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+
+    // 4. Signalements ouverts (en attente de traitement)
+    const pendingReports = await this.prisma.report.count({
+      where: {
+        status: 'OPEN',
+      },
+    });
+
+    // 5. Les 5 dernières commandes
+    const recentOrders = await this.prisma.order.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 5,
+      include: {
+        buyer: {
+          select: {
+            id: true,
+            name: true,
+            lastname: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    // 6. Les 5 derniers utilisateurs inscrits
+    const recentUsers = await this.prisma.user.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        email: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
+
+    // 7. Les 5 derniers signalements ouverts
+    const recentReports = await this.prisma.report.findMany({
+      where: {
+        status: 'OPEN',
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 5,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            lastname: true,
+          },
+        },
+      },
+    });
+
+    // 8. Distribution des produits par catégorie
+    const categories = await this.prisma.category.findMany({
+      include: {
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+    });
+
+    const categoryDistribution = categories.map((cat) => ({
+      id: cat.id,
+      label: cat.name,
+      count: cat._count.products,
+    }));
+
+    return {
+      metrics: {
+        totalUsers,
+        newUsersThisWeek,
+        totalProducts,
+        activeProducts,
+        totalOrders,
+        totalSalesVolume,
+        pendingReports,
+      },
+      recentOrders,
+      recentUsers,
+      recentReports,
+      categoryDistribution,
+    };
+  }
+
 }
