@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { calculateTotal, roundPrice } from '../common/utils/price.utils';
 import { WalletService } from '../wallet/wallet.service';
 import { TransactionsService } from '../transactions/transactions.service';
+import { FacturesService } from '../factures/factures.service';
 
 @Injectable()
 export class OrdersService {
@@ -11,6 +12,7 @@ export class OrdersService {
     private readonly prisma: PrismaService,
     private readonly walletService: WalletService,
     private readonly transactionsService: TransactionsService,
+    private readonly facturesService: FacturesService,
   ) { }
 
   /**
@@ -223,6 +225,11 @@ export class OrdersService {
       });
 
       return order;
+    });
+
+    // Générer la facture de manière asynchrone pour ne pas bloquer le retour HTTP
+    this.facturesService.generate(order.id).catch((err) => {
+      console.error(`Erreur lors de la génération automatique de la facture pour l'ordre ${order.id}:`, err);
     });
 
     return order;

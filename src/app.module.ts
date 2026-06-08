@@ -21,14 +21,15 @@ import { BankAccountModule } from './bank-account/bank-account.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
+import { FacturesModule } from './factures/factures.module';
 
 @Module({
   imports: [
     ThrottlerModule.forRoot([{
       ttl: 60000,
-      limit: 30,
+      limit: 150,
     }]),
-    PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule, BankAccountModule, PaymentsModule],
+    PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule, BankAccountModule, PaymentsModule, FacturesModule],
   controllers: [AppController],
   providers: [
     AppService,
