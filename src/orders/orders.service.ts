@@ -218,9 +218,19 @@ export class OrdersService {
         orderId: order.id,
       });
 
-      // Passer les produits en vendu 
+      // Recueillir tous les IDs de sous-produits pour les packs achetés afin de les archiver en cascade
+      const allProductIdsToArchive = [...productIds];
+      for (const product of products) {
+        const match = product.description?.match(/\[PACK:([^\]]+)\]/);
+        if (match && match[1]) {
+          const subIds = match[1].split(',').map((id: string) => id.trim()).filter(Boolean);
+          allProductIdsToArchive.push(...subIds);
+        }
+      }
+
+      // Passer les produits en vendu
       await tx.product.updateMany({
-        where: { id: { in: productIds } },
+        where: { id: { in: allProductIdsToArchive } },
         data: { status: 'ARCHIVED' },
       });
 

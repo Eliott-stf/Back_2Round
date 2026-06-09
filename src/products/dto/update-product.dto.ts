@@ -1,5 +1,5 @@
 import { IsString, IsNumber, IsPositive, IsOptional, IsEnum, MinLength } from 'class-validator';
-import { ProductCondition } from '../../generated/prisma/enums';
+import { ProductCondition, ProductStatus } from '../../generated/prisma/enums';
 
 export class UpdateProductDto {
   @IsOptional()
@@ -28,4 +28,8 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   categoryId?: string;
+
+  @IsOptional()
+  @IsEnum(ProductStatus)
+  status?: ProductStatus;
 }

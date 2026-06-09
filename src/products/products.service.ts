@@ -36,6 +36,45 @@ export class ProductsService {
    * @param {FilterProductDto} filters dto avec les critères de recherche (texte, catégorie, état, prix) et pagination.
    * @returns Un objet contenant les produits correspondants
    */
+  /**
+   * Helper pour charger virtuellement les sous-produits d'un pack à partir du tag [PACK:id1,id2,...] dans sa description
+   */
+  private async populateVirtualPack(product: any) {
+    if (!product) return product;
+
+    const match = product.description?.match(/\[PACK:([^\]]+)\]/);
+    if (match && match[1]) {
+      const ids = match[1].split(',').map((id: string) => id.trim()).filter(Boolean);
+      if (ids.length > 0) {
+        const subProducts = await this.prisma.product.findMany({
+          where: { id: { in: ids } },
+          include: {
+            medias: true,
+            category: true,
+          },
+        });
+        product.isPack = true;
+        product.subProducts = subProducts;
+        product.packProducts = subProducts.map((p: any) => ({ product: p }));
+        return product;
+      }
+    }
+
+    product.isPack = false;
+    product.subProducts = [];
+    product.packProducts = [];
+    return product;
+  }
+
+  private async populateVirtualPacks(products: any[]) {
+    return Promise.all(products.map(p => this.populateVirtualPack(p)));
+  }
+
+  /**
+   * Récupère une liste paginée de produits selon le filtrage
+   * @param {FilterProductDto} filters dto avec les critères de recherche (texte, catégorie, état, prix) et pagination.
+   * @returns Un objet contenant les produits correspondants
+   */
   async findAll(filters: FilterProductDto) {
     const { search, categoryId, size, condition, minPrice, maxPrice, page = 1, limit = 20, sellerId, status } = filters;
 
@@ -81,8 +120,10 @@ export class ProductsService {
       }),
     ]);
 
+    const populatedProducts = await this.populateVirtualPacks(products);
+
     return {
-      data: products,
+      data: populatedProducts,
       meta: {
         total,
         page,
@@ -111,7 +152,8 @@ export class ProductsService {
       },
       orderBy: { createdAt: 'desc' },
     });
-    return { data: products };
+    const populatedProducts = await this.populateVirtualPacks(products);
+    return { data: populatedProducts };
   }
 
   /**
@@ -141,7 +183,8 @@ export class ProductsService {
       },
     });
 
-    return { data: updated };
+    const populated = await this.populateVirtualPack(updated);
+    return { data: populated };
   }
 
   /**
@@ -189,7 +232,7 @@ export class ProductsService {
 
     //Si le produit n'est pas trouvé on throw une erreur 
     if (!product) throw new NotFoundException('Produit introuvable');
-    return product;
+    return this.populateVirtualPack(product);
   }
 
   /**
@@ -199,7 +242,7 @@ export class ProductsService {
    * @returns {Promise<{message: string}>} Un objet contenant un message de succès.
    */
   async create(userId: string, dto: CreateProductDto) {
-    return await this.prisma.product.create({
+    const product = await this.prisma.product.create({
       data: {
         title: dto.title,
         description: dto.description,
@@ -214,6 +257,25 @@ export class ProductsService {
         category: true,
       },
     });
+
+    // Gestion du pack virtuel : passer les sous-produits au statut PENDING
+    const match = dto.description?.match(/\[PACK:([^\]]+)\]/);
+    if (match && match[1]) {
+      const ids = match[1].split(',').map((id: string) => id.trim()).filter(Boolean);
+      if (ids.length > 0) {
+        await this.prisma.product.updateMany({
+          where: {
+            id: { in: ids },
+            sellerId: userId,
+          },
+          data: {
+            status: 'PENDING',
+          },
+        });
+      }
+    }
+
+    return this.populateVirtualPack(product);
   }
 
   /**
@@ -228,11 +290,13 @@ export class ProductsService {
     //On vérifie que l'user modifie SON produit 
     await this.checkOwnership(userId, productId);
 
-    return this.prisma.product.update({
+    const updated = await this.prisma.product.update({
       where: { id: productId },
       data: dto,
       include: { medias: true, category: true },
     });
+
+    return this.populateVirtualPack(updated);
   }
 
   /**
@@ -244,6 +308,29 @@ export class ProductsService {
 
     //On vérifie que l'user supprime SON produit 
     await this.checkOwnership(userId, productId);
+
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+    });
+
+    if (product) {
+      const match = product.description?.match(/\[PACK:([^\]]+)\]/);
+      if (match && match[1]) {
+        const ids = match[1].split(',').map((id: string) => id.trim()).filter(Boolean);
+        if (ids.length > 0) {
+          // Restaurer les sous-produits à AVAILABLE
+          await this.prisma.product.updateMany({
+            where: {
+              id: { in: ids },
+              sellerId: userId,
+            },
+            data: {
+              status: 'AVAILABLE',
+            },
+          });
+        }
+      }
+    }
 
     await this.prisma.product.delete({ where: { id: productId } });
     return { message: 'Produit supprimé avec succès' };
