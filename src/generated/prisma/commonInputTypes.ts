@@ -255,6 +255,23 @@ export type IntWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntFilter<$PrismaModel>
 }
 
+export type EnumFactureTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.FactureType | Prisma.EnumFactureTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.FactureType[]
+  notIn?: $Enums.FactureType[]
+  not?: Prisma.NestedEnumFactureTypeFilter<$PrismaModel> | $Enums.FactureType
+}
+
+export type EnumFactureTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FactureType | Prisma.EnumFactureTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.FactureType[]
+  notIn?: $Enums.FactureType[]
+  not?: Prisma.NestedEnumFactureTypeWithAggregatesFilter<$PrismaModel> | $Enums.FactureType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFactureTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFactureTypeFilter<$PrismaModel>
+}
+
 export type EnumAddressTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.AddressType | Prisma.EnumAddressTypeFieldRefInput<$PrismaModel>
   in?: $Enums.AddressType[]
@@ -610,6 +627,23 @@ export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedIntFilter<$PrismaModel>
   _max?: Prisma.NestedIntFilter<$PrismaModel>
+}
+
+export type NestedEnumFactureTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.FactureType | Prisma.EnumFactureTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.FactureType[]
+  notIn?: $Enums.FactureType[]
+  not?: Prisma.NestedEnumFactureTypeFilter<$PrismaModel> | $Enums.FactureType
+}
+
+export type NestedEnumFactureTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FactureType | Prisma.EnumFactureTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.FactureType[]
+  notIn?: $Enums.FactureType[]
+  not?: Prisma.NestedEnumFactureTypeWithAggregatesFilter<$PrismaModel> | $Enums.FactureType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFactureTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFactureTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumAddressTypeFilter<$PrismaModel = never> = {

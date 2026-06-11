@@ -35,8 +35,6 @@ export class RolesGuard implements CanActivate {
         if (!requiredRoles.includes(user.role)) {
             throw new ForbiddenException('Accès strictement réservé');
         }
-
         return true;
     }
-
 }

@@ -163,6 +163,7 @@ export const FactureScalarFieldEnum = {
   reference: 'reference',
   client: 'client',
   path: 'path',
+  type: 'type',
   orderId: 'orderId',
   createdAt: 'createdAt'
 } as const

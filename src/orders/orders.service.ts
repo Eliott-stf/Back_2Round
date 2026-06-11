@@ -309,4 +309,78 @@ export class OrdersService {
       data: { status: 'CANCELLED' },
     });
   }
+
+  /**
+   * Méthode pour annuler une commande (ADMIN) : remboursements + facture d'annulation
+   */
+  async cancelAndRefundAdmin(orderId: string) {
+    // 1. Fetch order
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: { include: { product: true } } },
+    });
+
+    if (!order) throw new NotFoundException('Commande introuvable');
+    if (order.status === 'CANCELLED') throw new BadRequestException('Cette commande est déjà annulée');
+    if (order.status !== 'PAID') throw new BadRequestException('Seule une commande payée peut être annulée de cette manière');
+
+    // 2. Transaction pour annuler
+    const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      // a. Changer le statut
+      const updated = await tx.order.update({
+        where: { id: orderId },
+        data: { status: 'CANCELLED' },
+        include: { items: { include: { product: true } } },
+      });
+
+      // b. Rembourser l'acheteur
+      const buyerWallet = await this.walletService.credit(tx, order.buyerId, order.totalAmount);
+      await this.transactionsService.create(tx, {
+        amount: order.totalAmount,
+        type: 'CREDIT',
+        description: `Remboursement suite annulation de la commande ${order.reference}`,
+        walletId: buyerWallet.id,
+        orderId: order.id,
+      });
+
+      // c. Débiter les vendeurs et récupérer les produits à restorer
+      const allProductIdsToRestore: string[] = [];
+      for (const item of order.items) {
+        const product = item.product;
+        const amount = roundPrice(item.unitPriceAtPurchase * item.quantity);
+
+        const sellerWallet = await this.walletService.debit(tx, product.sellerId, amount);
+        await this.transactionsService.create(tx, {
+          amount,
+          type: 'DEBIT',
+          description: `Reprise suite annulation de la vente : ${product.title}`,
+          walletId: sellerWallet.id,
+          orderId: order.id,
+        });
+
+        // Gestion des packs
+        allProductIdsToRestore.push(product.id);
+        const match = product.description?.match(/\[PACK:([^\]]+)\]/);
+        if (match && match[1]) {
+          const subIds = match[1].split(',').map((id: string) => id.trim()).filter(Boolean);
+          allProductIdsToRestore.push(...subIds);
+        }
+      }
+      
+      // d. Remettre les produits en vente (AVAILABLE)
+      await tx.product.updateMany({
+        where: { id: { in: allProductIdsToRestore } },
+        data: { status: 'AVAILABLE' },
+      });
+
+      return updated;
+    });
+
+    // 3. Générer la facture d'annulation
+    this.facturesService.generate(order.id, undefined, undefined, 'REFUND').catch((err) => {
+      console.error(`Erreur lors de la génération de la facture d'annulation pour l'ordre ${order.id}:`, err);
+    });
+
+    return updatedOrder;
+  }
 }

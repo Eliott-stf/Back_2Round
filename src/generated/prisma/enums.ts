@@ -81,3 +81,11 @@ export const ReportStatus = {
 } as const
 
 export type ReportStatus = (typeof ReportStatus)[keyof typeof ReportStatus]
+
+
+export const FactureType = {
+  INVOICE: 'INVOICE',
+  REFUND: 'REFUND'
+} as const
+
+export type FactureType = (typeof FactureType)[keyof typeof FactureType]

@@ -1724,6 +1724,7 @@ export const FactureScalarFieldEnum = {
   reference: 'reference',
   client: 'client',
   path: 'path',
+  type: 'type',
   orderId: 'orderId',
   createdAt: 'createdAt'
 } as const
@@ -2129,6 +2130,13 @@ export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'FactureType'
+ */
+export type EnumFactureTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FactureType'>
     
 
 

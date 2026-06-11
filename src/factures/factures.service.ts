@@ -13,8 +13,9 @@ export class FacturesService {
    * @param orderId ID de la commande
    * @param userId (Optionnel) ID de l'utilisateur effectuant la demande (si appelé via controller)
    * @param userRole (Optionnel) Rôle de l'utilisateur (si appelé via controller)
+   * @param type (Optionnel) Type de facture (INVOICE ou REFUND)
    */
-  async generate(orderId: string, userId?: string, userRole?: string) {
+  async generate(orderId: string, userId?: string, userRole?: string, type: 'INVOICE' | 'REFUND' = 'INVOICE') {
     // 1. Récupération de la commande avec ses relations
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
@@ -47,9 +48,12 @@ export class FacturesService {
       }
     }
 
-    // Vérifier que la commande est payée (PAID)
-    if (order.status !== 'PAID') {
+    // Vérifier le statut
+    if (type === 'INVOICE' && order.status !== 'PAID' && order.status !== 'SHIPPED' && order.status !== 'DELIVERED') {
       throw new BadRequestException(`Impossible de générer une facture pour une commande au statut : ${order.status}`);
+    }
+    if (type === 'REFUND' && order.status !== 'CANCELLED' && order.status !== 'REFUNDED') {
+      throw new BadRequestException(`Impossible de générer une facture d'annulation pour une commande au statut : ${order.status}`);
     }
 
     // 3. Préparer le dossier de stockage
@@ -58,20 +62,20 @@ export class FacturesService {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    const reference = `FAC-${order.reference.replace('2R-', '')}`;
+    const reference = type === 'REFUND' ? `REF-${order.reference.replace('2R-', '')}` : `FAC-${order.reference.replace('2R-', '')}`;
     const filename = `${reference}.pdf`;
     const filePath = path.join(uploadDir, filename);
     const dbPath = `/uploads/factures/${filename}`;
 
     // 4. Générer le fichier PDF
-    await this.generatePdfFile(order, reference, filePath);
+    await this.generatePdfFile(order, reference, filePath, type);
 
     // 5. Enregistrer l'entrée Facture en BDD
     const clientName = `${order.buyer.name} ${order.buyer.lastname}`;
     
     // Si la facture existe déjà (génération manuelle par la suite), on met juste à jour ou on la renvoie
     const existingFacture = await this.prisma.facture.findUnique({
-      where: { orderId: order.id },
+      where: { orderId_type: { orderId: order.id, type } },
     });
 
     if (existingFacture) {
@@ -84,6 +88,7 @@ export class FacturesService {
         client: clientName,
         path: dbPath,
         orderId: order.id,
+        type,
       },
     });
 
@@ -118,15 +123,16 @@ export class FacturesService {
       throw new ForbiddenException('Accès refusé');
     }
 
-    const facture = await this.prisma.facture.findUnique({
+    // Retourne toutes les factures de cette commande
+    const factures = await this.prisma.facture.findMany({
       where: { orderId },
     });
 
-    if (!facture) {
+    if (!factures || factures.length === 0) {
       throw new NotFoundException(`Facture pour la commande ${orderId} introuvable`);
     }
 
-    return facture;
+    return factures;
   }
 
   /**
@@ -182,7 +188,7 @@ export class FacturesService {
   /**
    * Génération du document PDF avec PDFKit
    */
-  private async generatePdfFile(order: any, reference: string, filePath: string): Promise<void> {
+  private async generatePdfFile(order: any, reference: string, filePath: string, type: 'INVOICE' | 'REFUND' = 'INVOICE'): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         const doc = new PDFDocument({ margin: 50, size: 'A4' });
@@ -213,10 +219,11 @@ export class FacturesService {
         }
 
         // Métadonnées Facture
+        const factureTitle = type === 'REFUND' ? "FACTURE D'ANNULATION" : "FACTURE";
         doc.fillColor(primaryColor)
-           .fontSize(20)
+           .fontSize(18)
            .font('Helvetica-Bold')
-           .text('FACTURE', 400, 50, { align: 'right' });
+           .text(factureTitle, 350, 50, { align: 'right', width: 200 });
 
         doc.fillColor(secondaryColor)
            .fontSize(9)
@@ -344,34 +351,36 @@ export class FacturesService {
 
         // --- SECTION TOTAL & RÈGLEMENT ---
         const totalY = currentY + 20;
+        const isRefund = type === 'REFUND';
+        const sign = isRefund ? '-' : '';
 
         // Informations de paiement (Aquittée) à gauche
         const paymentDate = new Date(order.updatedAt).toLocaleDateString('fr-FR');
         doc.fillColor(primaryColor)
            .fontSize(9)
            .font('Helvetica-Bold')
-           .text('Règlement :', 50, totalY);
+           .text(isRefund ? 'Remboursement :' : 'Règlement :', 50, totalY);
 
         doc.fillColor(secondaryColor)
            .fontSize(8)
            .font('Helvetica')
-           .text(`Statut : Facture acquittée`, 50, totalY + 14)
+           .text(isRefund ? `Statut : Remboursée` : `Statut : Facture acquittée`, 50, totalY + 14)
            .text(`Mode : Portefeuille 2ROUND`, 50, totalY + 24)
-           .text(`Date de paiement : ${paymentDate}`, 50, totalY + 34);
+           .text(`Date : ${paymentDate}`, 50, totalY + 34);
 
         // Totaux à droite
         doc.fillColor(primaryColor)
            .fontSize(10)
            .font('Helvetica-Bold')
            .text('Sous-total', 380, totalY, { width: 80, align: 'right' })
-           .text(`${order.totalAmount.toFixed(2)} €`, 470, totalY, { width: 65, align: 'right' });
+           .text(`${sign}${order.totalAmount.toFixed(2)} €`, 470, totalY, { width: 65, align: 'right' });
 
         doc.fillColor(primaryColor)
            .fontSize(12)
            .font('Helvetica-Bold')
            .text('Total Général', 380, totalY + 22, { width: 80, align: 'right' })
            .fillColor(accentColor)
-           .text(`${order.totalAmount.toFixed(2)} €`, 470, totalY + 22, { width: 65, align: 'right' });
+           .text(`${sign}${order.totalAmount.toFixed(2)} €`, 470, totalY + 22, { width: 65, align: 'right' });
 
         // --- PIED DE PAGE ---
         doc.fillColor(secondaryColor)

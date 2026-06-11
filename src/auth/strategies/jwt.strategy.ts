@@ -33,5 +33,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const { password, ...result } = user;
         return result;
     }
-
 }

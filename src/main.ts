@@ -22,9 +22,12 @@ async function bootstrap() {
   app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,      // supprime les champs non déclarés dans le DTO
-    forbidNonWhitelisted: true, // erreur si champ inconnu envoyé
-    transform: true,      // convertit automatiquement les types
+    // supprime les champs non déclarés dans le DTO
+    whitelist: true,  
+    // erreur si champ inconnu envoyé
+    forbidNonWhitelisted: true, 
+    // convertit automatiquement les types
+    transform: true,     
   }));
 
   // Helmet pour sécuriser les headers HTTP

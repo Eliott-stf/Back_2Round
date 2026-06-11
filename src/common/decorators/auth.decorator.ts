@@ -18,7 +18,6 @@ export function Auth(...roles: Role[]) {
     SetMetadata(ROLES_KEY, roles),
 
     //On applique les guards dans l'ordre
-    UseGuards(JwtAuthGuard, RolesGuard),
-    //TODO: Api 
+    UseGuards(JwtAuthGuard, RolesGuard), 
   );
 }

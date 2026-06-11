@@ -261,7 +261,7 @@ export type OrderWhereInput = {
   shippingAddress?: Prisma.XOR<Prisma.AddressScalarRelationFilter, Prisma.AddressWhereInput>
   billingAddress?: Prisma.XOR<Prisma.AddressScalarRelationFilter, Prisma.AddressWhereInput>
   items?: Prisma.OrderItemListRelationFilter
-  facture?: Prisma.XOR<Prisma.FactureNullableScalarRelationFilter, Prisma.FactureWhereInput> | null
+  factures?: Prisma.FactureListRelationFilter
   review?: Prisma.XOR<Prisma.ReviewNullableScalarRelationFilter, Prisma.ReviewWhereInput> | null
   transactions?: Prisma.TransactionListRelationFilter
 }
@@ -282,7 +282,7 @@ export type OrderOrderByWithRelationInput = {
   shippingAddress?: Prisma.AddressOrderByWithRelationInput
   billingAddress?: Prisma.AddressOrderByWithRelationInput
   items?: Prisma.OrderItemOrderByRelationAggregateInput
-  facture?: Prisma.FactureOrderByWithRelationInput
+  factures?: Prisma.FactureOrderByRelationAggregateInput
   review?: Prisma.ReviewOrderByWithRelationInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
   _relevance?: Prisma.OrderOrderByRelevanceInput
@@ -307,7 +307,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   shippingAddress?: Prisma.XOR<Prisma.AddressScalarRelationFilter, Prisma.AddressWhereInput>
   billingAddress?: Prisma.XOR<Prisma.AddressScalarRelationFilter, Prisma.AddressWhereInput>
   items?: Prisma.OrderItemListRelationFilter
-  facture?: Prisma.XOR<Prisma.FactureNullableScalarRelationFilter, Prisma.FactureWhereInput> | null
+  factures?: Prisma.FactureListRelationFilter
   review?: Prisma.XOR<Prisma.ReviewNullableScalarRelationFilter, Prisma.ReviewWhereInput> | null
   transactions?: Prisma.TransactionListRelationFilter
 }, "id" | "reference" | "offerId">
@@ -358,7 +358,7 @@ export type OrderCreateInput = {
   shippingAddress: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   billingAddress: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
 }
@@ -375,7 +375,7 @@ export type OrderUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureUncheckedCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureUncheckedCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -392,7 +392,7 @@ export type OrderUpdateInput = {
   shippingAddress?: Prisma.AddressUpdateOneRequiredWithoutShippingOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneRequiredWithoutBillingOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
 }
@@ -409,7 +409,7 @@ export type OrderUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUncheckedUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUncheckedUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
@@ -598,18 +598,18 @@ export type OrderUpdateOneRequiredWithoutItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutItemsInput, Prisma.OrderUpdateWithoutItemsInput>, Prisma.OrderUncheckedUpdateWithoutItemsInput>
 }
 
-export type OrderCreateNestedOneWithoutFactureInput = {
-  create?: Prisma.XOR<Prisma.OrderCreateWithoutFactureInput, Prisma.OrderUncheckedCreateWithoutFactureInput>
-  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutFactureInput
+export type OrderCreateNestedOneWithoutFacturesInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutFacturesInput, Prisma.OrderUncheckedCreateWithoutFacturesInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutFacturesInput
   connect?: Prisma.OrderWhereUniqueInput
 }
 
-export type OrderUpdateOneRequiredWithoutFactureNestedInput = {
-  create?: Prisma.XOR<Prisma.OrderCreateWithoutFactureInput, Prisma.OrderUncheckedCreateWithoutFactureInput>
-  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutFactureInput
-  upsert?: Prisma.OrderUpsertWithoutFactureInput
+export type OrderUpdateOneRequiredWithoutFacturesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutFacturesInput, Prisma.OrderUncheckedCreateWithoutFacturesInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutFacturesInput
+  upsert?: Prisma.OrderUpsertWithoutFacturesInput
   connect?: Prisma.OrderWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutFactureInput, Prisma.OrderUpdateWithoutFactureInput>, Prisma.OrderUncheckedUpdateWithoutFactureInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutFacturesInput, Prisma.OrderUpdateWithoutFacturesInput>, Prisma.OrderUncheckedUpdateWithoutFacturesInput>
 }
 
 export type OrderCreateNestedOneWithoutReviewInput = {
@@ -753,7 +753,7 @@ export type OrderCreateWithoutBuyerInput = {
   shippingAddress: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   billingAddress: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
 }
@@ -769,7 +769,7 @@ export type OrderUncheckedCreateWithoutBuyerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureUncheckedCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureUncheckedCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -828,7 +828,7 @@ export type OrderCreateWithoutTransactionsInput = {
   shippingAddress: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   billingAddress: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewCreateNestedOneWithoutOrderInput
 }
 
@@ -844,7 +844,7 @@ export type OrderUncheckedCreateWithoutTransactionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureUncheckedCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureUncheckedCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutOrderInput
 }
 
@@ -876,7 +876,7 @@ export type OrderUpdateWithoutTransactionsInput = {
   shippingAddress?: Prisma.AddressUpdateOneRequiredWithoutShippingOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneRequiredWithoutBillingOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUpdateOneWithoutOrderNestedInput
 }
 
@@ -892,7 +892,7 @@ export type OrderUncheckedUpdateWithoutTransactionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUncheckedUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUncheckedUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutOrderNestedInput
 }
 
@@ -907,7 +907,7 @@ export type OrderCreateWithoutItemsInput = {
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   shippingAddress: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   billingAddress: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
-  facture?: Prisma.FactureCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
 }
@@ -923,7 +923,7 @@ export type OrderUncheckedCreateWithoutItemsInput = {
   billingAddressId: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  facture?: Prisma.FactureUncheckedCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureUncheckedCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -955,7 +955,7 @@ export type OrderUpdateWithoutItemsInput = {
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   shippingAddress?: Prisma.AddressUpdateOneRequiredWithoutShippingOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneRequiredWithoutBillingOrdersNestedInput
-  facture?: Prisma.FactureUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
 }
@@ -971,12 +971,12 @@ export type OrderUncheckedUpdateWithoutItemsInput = {
   billingAddressId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  facture?: Prisma.FactureUncheckedUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUncheckedUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
 
-export type OrderCreateWithoutFactureInput = {
+export type OrderCreateWithoutFacturesInput = {
   id?: string
   reference: string
   status?: $Enums.OrderStatus
@@ -992,7 +992,7 @@ export type OrderCreateWithoutFactureInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
 }
 
-export type OrderUncheckedCreateWithoutFactureInput = {
+export type OrderUncheckedCreateWithoutFacturesInput = {
   id?: string
   reference: string
   status?: $Enums.OrderStatus
@@ -1008,23 +1008,23 @@ export type OrderUncheckedCreateWithoutFactureInput = {
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
-export type OrderCreateOrConnectWithoutFactureInput = {
+export type OrderCreateOrConnectWithoutFacturesInput = {
   where: Prisma.OrderWhereUniqueInput
-  create: Prisma.XOR<Prisma.OrderCreateWithoutFactureInput, Prisma.OrderUncheckedCreateWithoutFactureInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutFacturesInput, Prisma.OrderUncheckedCreateWithoutFacturesInput>
 }
 
-export type OrderUpsertWithoutFactureInput = {
-  update: Prisma.XOR<Prisma.OrderUpdateWithoutFactureInput, Prisma.OrderUncheckedUpdateWithoutFactureInput>
-  create: Prisma.XOR<Prisma.OrderCreateWithoutFactureInput, Prisma.OrderUncheckedCreateWithoutFactureInput>
+export type OrderUpsertWithoutFacturesInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutFacturesInput, Prisma.OrderUncheckedUpdateWithoutFacturesInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutFacturesInput, Prisma.OrderUncheckedCreateWithoutFacturesInput>
   where?: Prisma.OrderWhereInput
 }
 
-export type OrderUpdateToOneWithWhereWithoutFactureInput = {
+export type OrderUpdateToOneWithWhereWithoutFacturesInput = {
   where?: Prisma.OrderWhereInput
-  data: Prisma.XOR<Prisma.OrderUpdateWithoutFactureInput, Prisma.OrderUncheckedUpdateWithoutFactureInput>
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutFacturesInput, Prisma.OrderUncheckedUpdateWithoutFacturesInput>
 }
 
-export type OrderUpdateWithoutFactureInput = {
+export type OrderUpdateWithoutFacturesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -1040,7 +1040,7 @@ export type OrderUpdateWithoutFactureInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
 }
 
-export type OrderUncheckedUpdateWithoutFactureInput = {
+export type OrderUncheckedUpdateWithoutFacturesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
@@ -1068,7 +1068,7 @@ export type OrderCreateWithoutReviewInput = {
   shippingAddress: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   billingAddress: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureCreateNestedManyWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
 }
 
@@ -1084,7 +1084,7 @@ export type OrderUncheckedCreateWithoutReviewInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureUncheckedCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureUncheckedCreateNestedManyWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -1116,7 +1116,7 @@ export type OrderUpdateWithoutReviewInput = {
   shippingAddress?: Prisma.AddressUpdateOneRequiredWithoutShippingOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneRequiredWithoutBillingOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
 }
 
@@ -1132,7 +1132,7 @@ export type OrderUncheckedUpdateWithoutReviewInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUncheckedUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUncheckedUpdateManyWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -1147,7 +1147,7 @@ export type OrderCreateWithoutShippingAddressInput = {
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   billingAddress: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
 }
@@ -1163,7 +1163,7 @@ export type OrderUncheckedCreateWithoutShippingAddressInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureUncheckedCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureUncheckedCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -1189,7 +1189,7 @@ export type OrderCreateWithoutBillingAddressInput = {
   offer?: Prisma.OfferCreateNestedOneWithoutOrderInput
   shippingAddress: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
 }
@@ -1205,7 +1205,7 @@ export type OrderUncheckedCreateWithoutBillingAddressInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureUncheckedCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureUncheckedCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -1263,7 +1263,7 @@ export type OrderCreateWithoutOfferInput = {
   shippingAddress: Prisma.AddressCreateNestedOneWithoutShippingOrdersInput
   billingAddress: Prisma.AddressCreateNestedOneWithoutBillingOrdersInput
   items?: Prisma.OrderItemCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutOrderInput
 }
@@ -1279,7 +1279,7 @@ export type OrderUncheckedCreateWithoutOfferInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.OrderItemUncheckedCreateNestedManyWithoutOrderInput
-  facture?: Prisma.FactureUncheckedCreateNestedOneWithoutOrderInput
+  factures?: Prisma.FactureUncheckedCreateNestedManyWithoutOrderInput
   review?: Prisma.ReviewUncheckedCreateNestedOneWithoutOrderInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutOrderInput
 }
@@ -1311,7 +1311,7 @@ export type OrderUpdateWithoutOfferInput = {
   shippingAddress?: Prisma.AddressUpdateOneRequiredWithoutShippingOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneRequiredWithoutBillingOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
 }
@@ -1327,7 +1327,7 @@ export type OrderUncheckedUpdateWithoutOfferInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUncheckedUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUncheckedUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
@@ -1355,7 +1355,7 @@ export type OrderUpdateWithoutBuyerInput = {
   shippingAddress?: Prisma.AddressUpdateOneRequiredWithoutShippingOrdersNestedInput
   billingAddress?: Prisma.AddressUpdateOneRequiredWithoutBillingOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
 }
@@ -1371,7 +1371,7 @@ export type OrderUncheckedUpdateWithoutBuyerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUncheckedUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUncheckedUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
@@ -1423,7 +1423,7 @@ export type OrderUpdateWithoutShippingAddressInput = {
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   billingAddress?: Prisma.AddressUpdateOneRequiredWithoutBillingOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
 }
@@ -1439,7 +1439,7 @@ export type OrderUncheckedUpdateWithoutShippingAddressInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUncheckedUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUncheckedUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
@@ -1467,7 +1467,7 @@ export type OrderUpdateWithoutBillingAddressInput = {
   offer?: Prisma.OfferUpdateOneWithoutOrderNestedInput
   shippingAddress?: Prisma.AddressUpdateOneRequiredWithoutShippingOrdersNestedInput
   items?: Prisma.OrderItemUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutOrderNestedInput
 }
@@ -1483,7 +1483,7 @@ export type OrderUncheckedUpdateWithoutBillingAddressInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.OrderItemUncheckedUpdateManyWithoutOrderNestedInput
-  facture?: Prisma.FactureUncheckedUpdateOneWithoutOrderNestedInput
+  factures?: Prisma.FactureUncheckedUpdateManyWithoutOrderNestedInput
   review?: Prisma.ReviewUncheckedUpdateOneWithoutOrderNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutOrderNestedInput
 }
@@ -1507,11 +1507,13 @@ export type OrderUncheckedUpdateManyWithoutBillingAddressInput = {
 
 export type OrderCountOutputType = {
   items: number
+  factures: number
   transactions: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | OrderCountOutputTypeCountItemsArgs
+  factures?: boolean | OrderCountOutputTypeCountFacturesArgs
   transactions?: boolean | OrderCountOutputTypeCountTransactionsArgs
 }
 
@@ -1530,6 +1532,13 @@ export type OrderCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
  */
 export type OrderCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.OrderItemWhereInput
+}
+
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountFacturesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactureWhereInput
 }
 
 /**
@@ -1556,7 +1565,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   shippingAddress?: boolean | Prisma.AddressDefaultArgs<ExtArgs>
   billingAddress?: boolean | Prisma.AddressDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
-  facture?: boolean | Prisma.Order$factureArgs<ExtArgs>
+  factures?: boolean | Prisma.Order$facturesArgs<ExtArgs>
   review?: boolean | Prisma.Order$reviewArgs<ExtArgs>
   transactions?: boolean | Prisma.Order$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -1584,7 +1593,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   shippingAddress?: boolean | Prisma.AddressDefaultArgs<ExtArgs>
   billingAddress?: boolean | Prisma.AddressDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Order$itemsArgs<ExtArgs>
-  facture?: boolean | Prisma.Order$factureArgs<ExtArgs>
+  factures?: boolean | Prisma.Order$facturesArgs<ExtArgs>
   review?: boolean | Prisma.Order$reviewArgs<ExtArgs>
   transactions?: boolean | Prisma.Order$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -1598,7 +1607,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     shippingAddress: Prisma.$AddressPayload<ExtArgs>
     billingAddress: Prisma.$AddressPayload<ExtArgs>
     items: Prisma.$OrderItemPayload<ExtArgs>[]
-    facture: Prisma.$FacturePayload<ExtArgs> | null
+    factures: Prisma.$FacturePayload<ExtArgs>[]
     review: Prisma.$ReviewPayload<ExtArgs> | null
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
   }
@@ -1958,7 +1967,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   shippingAddress<T extends Prisma.AddressDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddressDefaultArgs<ExtArgs>>): Prisma.Prisma__AddressClient<runtime.Types.Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   billingAddress<T extends Prisma.AddressDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AddressDefaultArgs<ExtArgs>>): Prisma.Prisma__AddressClient<runtime.Types.Result.GetResult<Prisma.$AddressPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.Order$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  facture<T extends Prisma.Order$factureArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$factureArgs<ExtArgs>>): Prisma.Prisma__FactureClient<runtime.Types.Result.GetResult<Prisma.$FacturePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  factures<T extends Prisma.Order$facturesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$facturesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FacturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   review<T extends Prisma.Order$reviewArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$reviewArgs<ExtArgs>>): Prisma.Prisma__ReviewClient<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   transactions<T extends Prisma.Order$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2391,9 +2400,9 @@ export type Order$itemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 /**
- * Order.facture
+ * Order.factures
  */
-export type Order$factureArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Order$facturesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Facture
    */
@@ -2407,6 +2416,11 @@ export type Order$factureArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   include?: Prisma.FactureInclude<ExtArgs> | null
   where?: Prisma.FactureWhereInput
+  orderBy?: Prisma.FactureOrderByWithRelationInput | Prisma.FactureOrderByWithRelationInput[]
+  cursor?: Prisma.FactureWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactureScalarFieldEnum | Prisma.FactureScalarFieldEnum[]
 }
 
 /**

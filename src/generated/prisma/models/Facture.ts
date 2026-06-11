@@ -29,6 +29,7 @@ export type FactureMinAggregateOutputType = {
   reference: string | null
   client: string | null
   path: string | null
+  type: $Enums.FactureType | null
   orderId: string | null
   createdAt: Date | null
 }
@@ -38,6 +39,7 @@ export type FactureMaxAggregateOutputType = {
   reference: string | null
   client: string | null
   path: string | null
+  type: $Enums.FactureType | null
   orderId: string | null
   createdAt: Date | null
 }
@@ -47,6 +49,7 @@ export type FactureCountAggregateOutputType = {
   reference: number
   client: number
   path: number
+  type: number
   orderId: number
   createdAt: number
   _all: number
@@ -58,6 +61,7 @@ export type FactureMinAggregateInputType = {
   reference?: true
   client?: true
   path?: true
+  type?: true
   orderId?: true
   createdAt?: true
 }
@@ -67,6 +71,7 @@ export type FactureMaxAggregateInputType = {
   reference?: true
   client?: true
   path?: true
+  type?: true
   orderId?: true
   createdAt?: true
 }
@@ -76,6 +81,7 @@ export type FactureCountAggregateInputType = {
   reference?: true
   client?: true
   path?: true
+  type?: true
   orderId?: true
   createdAt?: true
   _all?: true
@@ -158,6 +164,7 @@ export type FactureGroupByOutputType = {
   reference: string
   client: string
   path: string
+  type: $Enums.FactureType
   orderId: string
   createdAt: Date
   _count: FactureCountAggregateOutputType | null
@@ -188,6 +195,7 @@ export type FactureWhereInput = {
   reference?: Prisma.StringFilter<"Facture"> | string
   client?: Prisma.StringFilter<"Facture"> | string
   path?: Prisma.StringFilter<"Facture"> | string
+  type?: Prisma.EnumFactureTypeFilter<"Facture"> | $Enums.FactureType
   orderId?: Prisma.StringFilter<"Facture"> | string
   createdAt?: Prisma.DateTimeFilter<"Facture"> | Date | string
   order?: Prisma.XOR<Prisma.OrderScalarRelationFilter, Prisma.OrderWhereInput>
@@ -198,6 +206,7 @@ export type FactureOrderByWithRelationInput = {
   reference?: Prisma.SortOrder
   client?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
@@ -207,21 +216,24 @@ export type FactureOrderByWithRelationInput = {
 export type FactureWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   reference?: string
-  orderId?: string
+  orderId_type?: Prisma.FactureOrderIdTypeCompoundUniqueInput
   AND?: Prisma.FactureWhereInput | Prisma.FactureWhereInput[]
   OR?: Prisma.FactureWhereInput[]
   NOT?: Prisma.FactureWhereInput | Prisma.FactureWhereInput[]
   client?: Prisma.StringFilter<"Facture"> | string
   path?: Prisma.StringFilter<"Facture"> | string
+  type?: Prisma.EnumFactureTypeFilter<"Facture"> | $Enums.FactureType
+  orderId?: Prisma.StringFilter<"Facture"> | string
   createdAt?: Prisma.DateTimeFilter<"Facture"> | Date | string
   order?: Prisma.XOR<Prisma.OrderScalarRelationFilter, Prisma.OrderWhereInput>
-}, "id" | "reference" | "orderId">
+}, "id" | "reference" | "orderId_type">
 
 export type FactureOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   reference?: Prisma.SortOrder
   client?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.FactureCountOrderByAggregateInput
@@ -237,6 +249,7 @@ export type FactureScalarWhereWithAggregatesInput = {
   reference?: Prisma.StringWithAggregatesFilter<"Facture"> | string
   client?: Prisma.StringWithAggregatesFilter<"Facture"> | string
   path?: Prisma.StringWithAggregatesFilter<"Facture"> | string
+  type?: Prisma.EnumFactureTypeWithAggregatesFilter<"Facture"> | $Enums.FactureType
   orderId?: Prisma.StringWithAggregatesFilter<"Facture"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Facture"> | Date | string
 }
@@ -246,8 +259,9 @@ export type FactureCreateInput = {
   reference: string
   client: string
   path: string
+  type?: $Enums.FactureType
   createdAt?: Date | string
-  order: Prisma.OrderCreateNestedOneWithoutFactureInput
+  order: Prisma.OrderCreateNestedOneWithoutFacturesInput
 }
 
 export type FactureUncheckedCreateInput = {
@@ -255,6 +269,7 @@ export type FactureUncheckedCreateInput = {
   reference: string
   client: string
   path: string
+  type?: $Enums.FactureType
   orderId: string
   createdAt?: Date | string
 }
@@ -264,8 +279,9 @@ export type FactureUpdateInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   client?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFactureTypeFieldUpdateOperationsInput | $Enums.FactureType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  order?: Prisma.OrderUpdateOneRequiredWithoutFactureNestedInput
+  order?: Prisma.OrderUpdateOneRequiredWithoutFacturesNestedInput
 }
 
 export type FactureUncheckedUpdateInput = {
@@ -273,6 +289,7 @@ export type FactureUncheckedUpdateInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   client?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFactureTypeFieldUpdateOperationsInput | $Enums.FactureType
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -282,6 +299,7 @@ export type FactureCreateManyInput = {
   reference: string
   client: string
   path: string
+  type?: $Enums.FactureType
   orderId: string
   createdAt?: Date | string
 }
@@ -291,6 +309,7 @@ export type FactureUpdateManyMutationInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   client?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFactureTypeFieldUpdateOperationsInput | $Enums.FactureType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -299,13 +318,19 @@ export type FactureUncheckedUpdateManyInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   client?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFactureTypeFieldUpdateOperationsInput | $Enums.FactureType
   orderId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type FactureNullableScalarRelationFilter = {
-  is?: Prisma.FactureWhereInput | null
-  isNot?: Prisma.FactureWhereInput | null
+export type FactureListRelationFilter = {
+  every?: Prisma.FactureWhereInput
+  some?: Prisma.FactureWhereInput
+  none?: Prisma.FactureWhereInput
+}
+
+export type FactureOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type FactureOrderByRelevanceInput = {
@@ -314,11 +339,17 @@ export type FactureOrderByRelevanceInput = {
   search: string
 }
 
+export type FactureOrderIdTypeCompoundUniqueInput = {
+  orderId: string
+  type: $Enums.FactureType
+}
+
 export type FactureCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   reference?: Prisma.SortOrder
   client?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -328,6 +359,7 @@ export type FactureMaxOrderByAggregateInput = {
   reference?: Prisma.SortOrder
   client?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -337,40 +369,55 @@ export type FactureMinOrderByAggregateInput = {
   reference?: Prisma.SortOrder
   client?: Prisma.SortOrder
   path?: Prisma.SortOrder
+  type?: Prisma.SortOrder
   orderId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
-export type FactureCreateNestedOneWithoutOrderInput = {
-  create?: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput>
-  connectOrCreate?: Prisma.FactureCreateOrConnectWithoutOrderInput
-  connect?: Prisma.FactureWhereUniqueInput
+export type FactureCreateNestedManyWithoutOrderInput = {
+  create?: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput> | Prisma.FactureCreateWithoutOrderInput[] | Prisma.FactureUncheckedCreateWithoutOrderInput[]
+  connectOrCreate?: Prisma.FactureCreateOrConnectWithoutOrderInput | Prisma.FactureCreateOrConnectWithoutOrderInput[]
+  createMany?: Prisma.FactureCreateManyOrderInputEnvelope
+  connect?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
 }
 
-export type FactureUncheckedCreateNestedOneWithoutOrderInput = {
-  create?: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput>
-  connectOrCreate?: Prisma.FactureCreateOrConnectWithoutOrderInput
-  connect?: Prisma.FactureWhereUniqueInput
+export type FactureUncheckedCreateNestedManyWithoutOrderInput = {
+  create?: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput> | Prisma.FactureCreateWithoutOrderInput[] | Prisma.FactureUncheckedCreateWithoutOrderInput[]
+  connectOrCreate?: Prisma.FactureCreateOrConnectWithoutOrderInput | Prisma.FactureCreateOrConnectWithoutOrderInput[]
+  createMany?: Prisma.FactureCreateManyOrderInputEnvelope
+  connect?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
 }
 
-export type FactureUpdateOneWithoutOrderNestedInput = {
-  create?: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput>
-  connectOrCreate?: Prisma.FactureCreateOrConnectWithoutOrderInput
-  upsert?: Prisma.FactureUpsertWithoutOrderInput
-  disconnect?: Prisma.FactureWhereInput | boolean
-  delete?: Prisma.FactureWhereInput | boolean
-  connect?: Prisma.FactureWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.FactureUpdateToOneWithWhereWithoutOrderInput, Prisma.FactureUpdateWithoutOrderInput>, Prisma.FactureUncheckedUpdateWithoutOrderInput>
+export type FactureUpdateManyWithoutOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput> | Prisma.FactureCreateWithoutOrderInput[] | Prisma.FactureUncheckedCreateWithoutOrderInput[]
+  connectOrCreate?: Prisma.FactureCreateOrConnectWithoutOrderInput | Prisma.FactureCreateOrConnectWithoutOrderInput[]
+  upsert?: Prisma.FactureUpsertWithWhereUniqueWithoutOrderInput | Prisma.FactureUpsertWithWhereUniqueWithoutOrderInput[]
+  createMany?: Prisma.FactureCreateManyOrderInputEnvelope
+  set?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
+  disconnect?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
+  delete?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
+  connect?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
+  update?: Prisma.FactureUpdateWithWhereUniqueWithoutOrderInput | Prisma.FactureUpdateWithWhereUniqueWithoutOrderInput[]
+  updateMany?: Prisma.FactureUpdateManyWithWhereWithoutOrderInput | Prisma.FactureUpdateManyWithWhereWithoutOrderInput[]
+  deleteMany?: Prisma.FactureScalarWhereInput | Prisma.FactureScalarWhereInput[]
 }
 
-export type FactureUncheckedUpdateOneWithoutOrderNestedInput = {
-  create?: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput>
-  connectOrCreate?: Prisma.FactureCreateOrConnectWithoutOrderInput
-  upsert?: Prisma.FactureUpsertWithoutOrderInput
-  disconnect?: Prisma.FactureWhereInput | boolean
-  delete?: Prisma.FactureWhereInput | boolean
-  connect?: Prisma.FactureWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.FactureUpdateToOneWithWhereWithoutOrderInput, Prisma.FactureUpdateWithoutOrderInput>, Prisma.FactureUncheckedUpdateWithoutOrderInput>
+export type FactureUncheckedUpdateManyWithoutOrderNestedInput = {
+  create?: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput> | Prisma.FactureCreateWithoutOrderInput[] | Prisma.FactureUncheckedCreateWithoutOrderInput[]
+  connectOrCreate?: Prisma.FactureCreateOrConnectWithoutOrderInput | Prisma.FactureCreateOrConnectWithoutOrderInput[]
+  upsert?: Prisma.FactureUpsertWithWhereUniqueWithoutOrderInput | Prisma.FactureUpsertWithWhereUniqueWithoutOrderInput[]
+  createMany?: Prisma.FactureCreateManyOrderInputEnvelope
+  set?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
+  disconnect?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
+  delete?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
+  connect?: Prisma.FactureWhereUniqueInput | Prisma.FactureWhereUniqueInput[]
+  update?: Prisma.FactureUpdateWithWhereUniqueWithoutOrderInput | Prisma.FactureUpdateWithWhereUniqueWithoutOrderInput[]
+  updateMany?: Prisma.FactureUpdateManyWithWhereWithoutOrderInput | Prisma.FactureUpdateManyWithWhereWithoutOrderInput[]
+  deleteMany?: Prisma.FactureScalarWhereInput | Prisma.FactureScalarWhereInput[]
+}
+
+export type EnumFactureTypeFieldUpdateOperationsInput = {
+  set?: $Enums.FactureType
 }
 
 export type FactureCreateWithoutOrderInput = {
@@ -378,6 +425,7 @@ export type FactureCreateWithoutOrderInput = {
   reference: string
   client: string
   path: string
+  type?: $Enums.FactureType
   createdAt?: Date | string
 }
 
@@ -386,6 +434,7 @@ export type FactureUncheckedCreateWithoutOrderInput = {
   reference: string
   client: string
   path: string
+  type?: $Enums.FactureType
   createdAt?: Date | string
 }
 
@@ -394,15 +443,47 @@ export type FactureCreateOrConnectWithoutOrderInput = {
   create: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput>
 }
 
-export type FactureUpsertWithoutOrderInput = {
-  update: Prisma.XOR<Prisma.FactureUpdateWithoutOrderInput, Prisma.FactureUncheckedUpdateWithoutOrderInput>
-  create: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput>
-  where?: Prisma.FactureWhereInput
+export type FactureCreateManyOrderInputEnvelope = {
+  data: Prisma.FactureCreateManyOrderInput | Prisma.FactureCreateManyOrderInput[]
+  skipDuplicates?: boolean
 }
 
-export type FactureUpdateToOneWithWhereWithoutOrderInput = {
-  where?: Prisma.FactureWhereInput
+export type FactureUpsertWithWhereUniqueWithoutOrderInput = {
+  where: Prisma.FactureWhereUniqueInput
+  update: Prisma.XOR<Prisma.FactureUpdateWithoutOrderInput, Prisma.FactureUncheckedUpdateWithoutOrderInput>
+  create: Prisma.XOR<Prisma.FactureCreateWithoutOrderInput, Prisma.FactureUncheckedCreateWithoutOrderInput>
+}
+
+export type FactureUpdateWithWhereUniqueWithoutOrderInput = {
+  where: Prisma.FactureWhereUniqueInput
   data: Prisma.XOR<Prisma.FactureUpdateWithoutOrderInput, Prisma.FactureUncheckedUpdateWithoutOrderInput>
+}
+
+export type FactureUpdateManyWithWhereWithoutOrderInput = {
+  where: Prisma.FactureScalarWhereInput
+  data: Prisma.XOR<Prisma.FactureUpdateManyMutationInput, Prisma.FactureUncheckedUpdateManyWithoutOrderInput>
+}
+
+export type FactureScalarWhereInput = {
+  AND?: Prisma.FactureScalarWhereInput | Prisma.FactureScalarWhereInput[]
+  OR?: Prisma.FactureScalarWhereInput[]
+  NOT?: Prisma.FactureScalarWhereInput | Prisma.FactureScalarWhereInput[]
+  id?: Prisma.StringFilter<"Facture"> | string
+  reference?: Prisma.StringFilter<"Facture"> | string
+  client?: Prisma.StringFilter<"Facture"> | string
+  path?: Prisma.StringFilter<"Facture"> | string
+  type?: Prisma.EnumFactureTypeFilter<"Facture"> | $Enums.FactureType
+  orderId?: Prisma.StringFilter<"Facture"> | string
+  createdAt?: Prisma.DateTimeFilter<"Facture"> | Date | string
+}
+
+export type FactureCreateManyOrderInput = {
+  id?: string
+  reference: string
+  client: string
+  path: string
+  type?: $Enums.FactureType
+  createdAt?: Date | string
 }
 
 export type FactureUpdateWithoutOrderInput = {
@@ -410,6 +491,7 @@ export type FactureUpdateWithoutOrderInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   client?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFactureTypeFieldUpdateOperationsInput | $Enums.FactureType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -418,6 +500,16 @@ export type FactureUncheckedUpdateWithoutOrderInput = {
   reference?: Prisma.StringFieldUpdateOperationsInput | string
   client?: Prisma.StringFieldUpdateOperationsInput | string
   path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFactureTypeFieldUpdateOperationsInput | $Enums.FactureType
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type FactureUncheckedUpdateManyWithoutOrderInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  reference?: Prisma.StringFieldUpdateOperationsInput | string
+  client?: Prisma.StringFieldUpdateOperationsInput | string
+  path?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumFactureTypeFieldUpdateOperationsInput | $Enums.FactureType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -428,6 +520,7 @@ export type FactureSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   reference?: boolean
   client?: boolean
   path?: boolean
+  type?: boolean
   orderId?: boolean
   createdAt?: boolean
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
@@ -440,11 +533,12 @@ export type FactureSelectScalar = {
   reference?: boolean
   client?: boolean
   path?: boolean
+  type?: boolean
   orderId?: boolean
   createdAt?: boolean
 }
 
-export type FactureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reference" | "client" | "path" | "orderId" | "createdAt", ExtArgs["result"]["facture"]>
+export type FactureOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "reference" | "client" | "path" | "type" | "orderId" | "createdAt", ExtArgs["result"]["facture"]>
 export type FactureInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }
@@ -459,6 +553,7 @@ export type $FacturePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     reference: string
     client: string
     path: string
+    type: $Enums.FactureType
     orderId: string
     createdAt: Date
   }, ExtArgs["result"]["facture"]>
@@ -835,6 +930,7 @@ export interface FactureFieldRefs {
   readonly reference: Prisma.FieldRef<"Facture", 'String'>
   readonly client: Prisma.FieldRef<"Facture", 'String'>
   readonly path: Prisma.FieldRef<"Facture", 'String'>
+  readonly type: Prisma.FieldRef<"Facture", 'FactureType'>
   readonly orderId: Prisma.FieldRef<"Facture", 'String'>
   readonly createdAt: Prisma.FieldRef<"Facture", 'DateTime'>
 }

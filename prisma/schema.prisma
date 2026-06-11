@@ -68,6 +68,11 @@ enum ReportStatus {
   REJECTED
 }
 
+enum FactureType {
+  INVOICE
+  REFUND
+}
+
 // ===========
 // Entitées
 //============
@@ -140,7 +145,7 @@ model Order {
   shippingAddress Address       @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
   billingAddress  Address       @relation("BillingAddress", fields: [billingAddressId], references: [id])
   items           OrderItem[]
-  facture         Facture?
+  factures        Facture[]
   review          Review?
   transactions    Transaction[]
 }
@@ -157,14 +162,17 @@ model OrderItem {
 }
 
 model Facture {
-  id        String   @id @default(uuid())
-  reference String   @unique
+  id        String      @id @default(uuid())
+  reference String      @unique
   client    String
   path      String
-  orderId   String   @unique @map("order_id")
-  createdAt DateTime @default(now()) @map("created_at")
+  type      FactureType @default(INVOICE)
+  orderId   String      @map("order_id")
+  createdAt DateTime    @default(now()) @map("created_at")
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([orderId, type])
 }
 
 model Review {

@@ -85,4 +85,15 @@ export class OrdersController {
     return this.ordersService.cancel(user.id, id);
   }
 
+  /**
+   * PATCH /orders/admin/:id/cancel-refund
+   * Annule une commande payée, rembourse l'acheteur, génère une facture d'annulation
+   * @Auth Rôle ADMINISTRATEUR
+   */
+  @Patch('admin/:id/cancel-refund')
+  @Auth(Role.ADMIN)
+  cancelAndRefundAdmin(@Param('id') id: string) {
+    return this.ordersService.cancelAndRefundAdmin(id);
+  }
+
 }
