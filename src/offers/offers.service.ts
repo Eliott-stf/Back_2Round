@@ -1,10 +1,14 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { MessagesGateway } from '../websocket/messages.gateway';
 
 @Injectable()
 export class OffersService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly messagesGateway: MessagesGateway,
+  ) { }
 
   /**
    * Méthode pour faire une offre
@@ -35,13 +39,24 @@ export class OffersService {
     if (existing) throw new BadRequestException('Une offre est déjà en attente sur ce produit');
 
     //on créer en bdd
-    return this.prisma.offer.create({
+    const offer = await this.prisma.offer.create({
       data: {
         proposedPrice: dto.proposedPrice,
         productId: dto.productId,
         conversationId: dto.conversationId,
       },
     });
+
+    const payload = {
+      conversationId: offer.conversationId,
+      offer,
+    };
+
+    // Notification WebSocket de la nouvelle offre aux deux utilisateurs
+    this.messagesGateway.sendToUser(product.sellerId, 'offer', payload);
+    this.messagesGateway.sendToUser(buyerId, 'offer', payload);
+
+    return offer;
   }
 
   /**
@@ -99,10 +114,27 @@ export class OffersService {
       throw new BadRequestException('Cette offre ne peut plus être acceptée');
     }
 
-    return this.prisma.offer.update({
+    const updatedOffer = await this.prisma.offer.update({
       where: { id: offerId },
       data: { status: 'ACCEPTED' },
     });
+
+    // Notification de mise à jour du statut aux participants
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: updatedOffer.conversationId },
+    });
+
+    if (conversation) {
+      const payload = {
+        conversationId: updatedOffer.conversationId,
+        offerId: updatedOffer.id,
+        status: updatedOffer.status,
+      };
+      this.messagesGateway.sendToUser(conversation.buyerId, 'offer_status_updated', payload);
+      this.messagesGateway.sendToUser(sellerId, 'offer_status_updated', payload);
+    }
+
+    return updatedOffer;
   }
 
   /**
@@ -119,14 +151,31 @@ export class OffersService {
       throw new BadRequestException('Cette offre ne peut plus être refusée');
     }
 
-    return this.prisma.offer.update({
+    const updatedOffer = await this.prisma.offer.update({
       where: { id: offerId },
       data: { status: 'DECLINED' },
     });
+
+    // Notification de mise à jour du statut aux participants
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: updatedOffer.conversationId },
+    });
+
+    if (conversation) {
+      const payload = {
+        conversationId: updatedOffer.conversationId,
+        offerId: updatedOffer.id,
+        status: updatedOffer.status,
+      };
+      this.messagesGateway.sendToUser(conversation.buyerId, 'offer_status_updated', payload);
+      this.messagesGateway.sendToUser(sellerId, 'offer_status_updated', payload);
+    }
+
+    return updatedOffer;
   }
 
 
-  // Util privé — vérifie que le vendeur est bien proprio du produit lié à l'offre
+  // Util privé pr vérifier que le vendeur est bien proprio du produit lié à l'offre
   private async findOfferAndCheckSeller(sellerId: string, offerId: string) {
     const offer = await this.prisma.offer.findUnique({
       where: { id: offerId },

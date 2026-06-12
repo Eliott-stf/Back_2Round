@@ -1,11 +1,15 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { MessagesGateway } from '../websocket/messages.gateway';
 
 @Injectable()
 export class MessagesService {
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly messagesGateway: MessagesGateway,
+  ) {}
 
   /**
    * Méthode utils privée validant l'appartenance d'un utilisateur à une conv
@@ -45,7 +49,7 @@ export class MessagesService {
   async send(userId: string, conversationId: string, dto: CreateMessageDto) {
 
     //Vérif que l'user appartient a la conversation
-    await this.checkAccess(userId, conversationId);
+    const conversation = await this.checkAccess(userId, conversationId);
 
     //On met a jour la conversation
     await this.prisma.conversation.update({
@@ -54,7 +58,7 @@ export class MessagesService {
     });
 
     //On créer notre message en bdd
-    return this.prisma.message.create({
+    const message = await this.prisma.message.create({
       data: {
         content: dto.content,
         senderId: userId,
@@ -66,6 +70,15 @@ export class MessagesService {
         },
       },
     });
+
+    // Déterminer le destinataire du message
+    const recipientId = conversation.buyerId === userId ? conversation.product.sellerId : conversation.buyerId;
+
+    // Émettre aux deux parties en temps réel pour synchroniser les sessions
+    this.messagesGateway.sendToUser(recipientId, 'message', { conversationId, message });
+    this.messagesGateway.sendToUser(userId, 'message', { conversationId, message });
+
+    return message;
   }
 
   /**
