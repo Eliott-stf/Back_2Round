@@ -20,7 +20,7 @@ export class OrdersService {
    * @return Tab des orders
    */
   async findAll() {
-    return this.prisma.order.findMany({
+    const orders = await this.prisma.order.findMany({
       include: {
         buyer: {
           select: {
@@ -49,9 +49,11 @@ export class OrdersService {
             },
           },
         },
+        factures: true,
       },
       orderBy: { createdAt: 'desc' },
     });
+    return this.populatePacksInOrders(orders);
   }
 
   /**
@@ -60,7 +62,7 @@ export class OrdersService {
    * @return Liste des commandes incluant les articles, les produits associés (avec médias) et l'adresse de livraison.
    */
   async findMyOrders(buyerId: string) {
-    return await this.prisma.order.findMany({
+    const orders = await this.prisma.order.findMany({
       where: { buyerId }, // <--- CORRECTION ICI
       include: {
         items: {
@@ -72,9 +74,11 @@ export class OrdersService {
         },
         shippingAddress: true,
         billingAddress: true,
+        factures: true,
       },
       orderBy: { createdAt: 'desc' },
     });
+    return this.populatePacksInOrders(orders);
   }
 
   /**
@@ -83,7 +87,7 @@ export class OrdersService {
    * @returns Liste des ventes incluant les articles du vendeur, l'adresse et les informations publiques de l'acheteur.
    */
   async findMySales(sellerId: string) {
-    return this.prisma.order.findMany({
+    const orders = await this.prisma.order.findMany({
       where: {
         items: {
           some: {
@@ -101,9 +105,11 @@ export class OrdersService {
         },
         shippingAddress: true,
         billingAddress: true,
+        factures: true,
       },
       orderBy: { createdAt: 'desc' },
     });
+    return this.populatePacksInOrders(orders);
   }
 
   /**
@@ -265,6 +271,7 @@ export class OrdersService {
         buyer: {
           select: { id: true, name: true, lastname: true },
         },
+        factures: true,
       },
     });
 
@@ -279,7 +286,8 @@ export class OrdersService {
       throw new ForbiddenException('Accès refusé');
     }
 
-    return order;
+    const populated = await this.populatePacksInOrders([order]);
+    return populated[0];
   }
 
   /**
@@ -382,5 +390,63 @@ export class OrdersService {
     });
 
     return updatedOrder;
+  }
+
+  /**
+   * Helper pour attacher la première image d'un lot (pack) aux commandes
+   */
+  async populatePacksInOrders(orders: any[]) {
+    const packMap = new Map<string, string[]>();
+
+    for (const order of orders) {
+      if (!order.items) continue;
+      for (const item of order.items) {
+        const product = item.product;
+        if (product && (!product.medias || product.medias.length === 0)) {
+          const match = product.description?.match(/\[PACK:([^\]]+)\]/);
+          if (match && match[1]) {
+            const subIds = match[1].split(',').map((id: string) => id.trim()).filter(Boolean);
+            if (subIds.length > 0) {
+              packMap.set(product.id, subIds);
+            }
+          }
+        }
+      }
+    }
+
+    if (packMap.size > 0) {
+      const firstSubProductIds = Array.from(packMap.values()).map(ids => ids[0]);
+      
+      // Since productMedia is not exported in prisma service we have to use prisma query
+      // actually the table is productMedia in Prisma schema? Usually it's `media` or `productMedia`.
+      // Let's use prisma.product.findMany to get the medias of the first sub-products.
+      const subProducts = await this.prisma.product.findMany({
+        where: { id: { in: firstSubProductIds } },
+        include: { medias: true }
+      });
+
+      const mediaMap = new Map<string, any[]>();
+      for (const p of subProducts) {
+        mediaMap.set(p.id, p.medias);
+      }
+
+      for (const order of orders) {
+        if (!order.items) continue;
+        for (const item of order.items) {
+          const product = item.product;
+          if (product && packMap.has(product.id)) {
+            const subIds = packMap.get(product.id);
+            if (subIds && subIds.length > 0) {
+              const firstMedias = mediaMap.get(subIds[0]);
+              if (firstMedias && firstMedias.length > 0) {
+                product.medias = firstMedias;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return orders;
   }
 }

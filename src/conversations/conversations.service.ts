@@ -29,7 +29,7 @@ export class ConversationsService {
           }
         },
         buyer: {
-          select: { name: true, lastname: true, avatarUrl: true },
+          select: { id: true, name: true, lastname: true, avatarUrl: true },
         },
         messages: {
           orderBy: { createdAt: 'desc' },
@@ -59,12 +59,12 @@ export class ConversationsService {
           include: {
             medias: true,
             seller: {
-              select: { name: true, lastname: true, avatarUrl: true },
+              select: { id: true, name: true, lastname: true, avatarUrl: true },
             },
           },
         },
         buyer: {
-          select: { name: true, lastname: true, avatarUrl: true },
+          select: { id: true, name: true, lastname: true, avatarUrl: true },
         },
         messages: { orderBy: { createdAt: 'asc' } },
         offers: { orderBy: { createdAt: 'desc' } },

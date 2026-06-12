@@ -189,6 +189,21 @@ export class FacturesService {
    * Génération du document PDF avec PDFKit
    */
   private async generatePdfFile(order: any, reference: string, filePath: string, type: 'INVOICE' | 'REFUND' = 'INVOICE'): Promise<void> {
+    // 1. Enrichir les articles (chargement des sous-produits pour les packs)
+    for (const item of order.items) {
+      if (item.product && item.product.description) {
+        const match = item.product.description.match(/\[PACK:([^\]]+)\]/);
+        if (match) {
+          const subProductIds = match[1].split(',');
+          const subProducts = await this.prisma.product.findMany({
+            where: { id: { in: subProductIds } },
+            select: { title: true, price: true }
+          });
+          item.subProducts = subProducts;
+        }
+      }
+    }
+
     return new Promise((resolve, reject) => {
       try {
         const doc = new PDFDocument({ margin: 50, size: 'A4' });
@@ -303,13 +318,25 @@ export class FacturesService {
            .lineWidth(1)
            .stroke();
 
-        // --- LIGNES D'ARTICLES (AVEC VENDEUR) ---
+        // --- LIGNES D'ARTICLES (AVEC VENDEUR ET GESTION DES OFFRES/PACKS) ---
         let currentY = tableTop + 25;
-        const rowHeight = 40; // Hauteur ajustée pour le sous-titre vendeur
 
         order.items.forEach((item: any, index: number) => {
           const product = item.product;
           const totalItemPrice = item.unitPriceAtPurchase * item.quantity;
+          const isPack = !!item.subProducts;
+          
+          let basePrice = product.price;
+          if (isPack) {
+             basePrice = item.subProducts.reduce((sum: number, p: any) => sum + p.price, 0);
+          }
+
+          const hasOffer = item.unitPriceAtPurchase < basePrice;
+
+          // Calculer la hauteur nécessaire pour cette ligne
+          // 40 pour la ligne de base, + 12 pour chaque sous-produit si pack
+          const subProductsCount = isPack ? item.subProducts.length : 0;
+          const rowHeight = 40 + (subProductsCount * 12);
 
           // Arrière-plan alterné
           if (index % 2 === 1) {
@@ -331,13 +358,82 @@ export class FacturesService {
              .font('Helvetica')
              .text(sellerName, 60, currentY + 22, { width: 190, ellipsis: true });
 
+          // Affichage des sous-produits pour un pack
+          if (isPack) {
+             let subY = currentY + 34;
+             item.subProducts.forEach((sub: any) => {
+                doc.fillColor('#718096')
+                   .fontSize(7)
+                   .font('Helvetica')
+                   .text(`- ${sub.title} (${sub.price.toFixed(2)} €)`, 65, subY, { width: 180, ellipsis: true });
+                subY += 12;
+             });
+          }
+
           doc.fillColor(primaryColor)
              .fontSize(9)
              .font('Helvetica')
-             .text(product.size || '-', 260, currentY + 15, { width: 60, align: 'center' })
-             .text(`${item.unitPriceAtPurchase.toFixed(2)} €`, 330, currentY + 15, { width: 80, align: 'right' })
-             .text(item.quantity.toString(), 420, currentY + 15, { width: 40, align: 'center' })
-             .text(`${totalItemPrice.toFixed(2)} €`, 470, currentY + 15, { width: 65, align: 'right' });
+             .text(product.size || '-', 260, currentY + 15, { width: 60, align: 'center' });
+
+          // Gestion de l'affichage du prix : prix barré si offre
+          if (hasOffer) {
+             // Prix d'origine barré
+             doc.fillColor('#A0AEC0')
+                .fontSize(8)
+                .text(`${basePrice.toFixed(2)} €`, 330, currentY + 8, { width: 80, align: 'right' });
+             
+             // Ligne de rayure
+             const strikethroughWidth = doc.widthOfString(`${basePrice.toFixed(2)} €`);
+             doc.moveTo(410 - strikethroughWidth, currentY + 12)
+                .lineTo(410, currentY + 12)
+                .strokeColor('#A0AEC0')
+                .lineWidth(1)
+                .stroke();
+
+             // Prix de l'offre
+             doc.fillColor(accentColor)
+                .fontSize(9)
+                .font('Helvetica-Bold')
+                .text(`${item.unitPriceAtPurchase.toFixed(2)} €`, 330, currentY + 18, { width: 80, align: 'right' });
+          } else {
+             // Prix normal
+             doc.fillColor(primaryColor)
+                .fontSize(9)
+                .font('Helvetica')
+                .text(`${item.unitPriceAtPurchase.toFixed(2)} €`, 330, currentY + 15, { width: 80, align: 'right' });
+          }
+
+          doc.fillColor(primaryColor)
+             .fontSize(9)
+             .font('Helvetica')
+             .text(item.quantity.toString(), 420, currentY + 15, { width: 40, align: 'center' });
+
+          if (hasOffer) {
+             // Total (Qté * Prix d'origine) barré
+             const totalBase = basePrice * item.quantity;
+             doc.fillColor('#A0AEC0')
+                .fontSize(8)
+                .font('Helvetica')
+                .text(`${totalBase.toFixed(2)} €`, 470, currentY + 8, { width: 65, align: 'right' });
+             
+             const strikethroughTotalWidth = doc.widthOfString(`${totalBase.toFixed(2)} €`);
+             doc.moveTo(535 - strikethroughTotalWidth, currentY + 12)
+                .lineTo(535, currentY + 12)
+                .strokeColor('#A0AEC0')
+                .lineWidth(1)
+                .stroke();
+
+             // Total effectif
+             doc.fillColor(accentColor)
+                .fontSize(9)
+                .font('Helvetica-Bold')
+                .text(`${totalItemPrice.toFixed(2)} €`, 470, currentY + 18, { width: 65, align: 'right' });
+          } else {
+             doc.fillColor(primaryColor)
+                .fontSize(9)
+                .font('Helvetica')
+                .text(`${totalItemPrice.toFixed(2)} €`, 470, currentY + 15, { width: 65, align: 'right' });
+          }
 
           currentY += rowHeight;
 

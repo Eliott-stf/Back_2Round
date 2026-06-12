@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { OrdersService } from '../orders/orders.service';
 
 @Injectable()
 export class UsersService {
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(forwardRef(() => OrdersService)) private readonly ordersService: OrdersService
+  ) { }
 
   /**
    * Récupère le profil complet de l'utilisateur connecté
@@ -262,7 +266,7 @@ export class UsersService {
     });
 
     // 5. Les 5 dernières commandes
-    const recentOrders = await this.prisma.order.findMany({
+    let recentOrders = await this.prisma.order.findMany({
       orderBy: {
         createdAt: 'desc',
       },
@@ -276,8 +280,22 @@ export class UsersService {
             email: true,
           },
         },
+        items: {
+          include: {
+            product: {
+              include: {
+                medias: true,
+                seller: {
+                  select: { id: true, name: true, lastname: true }
+                }
+              },
+            },
+          },
+        },
       },
     });
+
+    recentOrders = await this.ordersService.populatePacksInOrders(recentOrders);
 
     // 6. Les 5 derniers utilisateurs inscrits
     const recentUsers = await this.prisma.user.findMany({
