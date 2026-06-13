@@ -34,7 +34,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
             user,
             password,
             database,
-            connectionLimit: 10,
+            connectionLimit: 5,
         });
         super({ adapter });
     }

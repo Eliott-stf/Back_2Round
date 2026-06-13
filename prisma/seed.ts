@@ -31,7 +31,7 @@ const adapter = new PrismaMariaDb({
   user,
   password,
   database,
-  connectionLimit: 10,
+  connectionLimit: 5,
 });
 
 const prisma = new PrismaClient({ adapter });
