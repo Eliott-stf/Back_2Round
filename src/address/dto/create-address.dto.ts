@@ -9,7 +9,7 @@ export class CreateAddressDto {
   @IsOptional()
   @IsString({ message: 'Veuillez renseigner un numéro de rue valide.' })
   @MaxLength(20, { message: 'Le numéro de rue est trop long.' })
-  @Matches(/^[^<>]+$/, { message: 'Les caractères < et > ne sont pas autorisés dans le numéro.' })
+  @Matches(/^[^<>]*$/, { message: 'Les caractères < et > ne sont pas autorisés dans le numéro.' })
   streetNumber?: string;
 
   @IsNotEmpty({ message: 'Le nom de la rue est obligatoire.' })
@@ -36,6 +36,6 @@ export class CreateAddressDto {
   @IsOptional()
   @IsString({ message: 'Veuillez renseigner un complément d\'adresse valide.' })
   @MaxLength(255, { message: 'Le complément d\'adresse est trop long.' })
-  @Matches(/^[^<>]+$/, { message: 'Les caractères < et > ne sont pas autorisés dans le complément.' })
+  @Matches(/^[^<>]*$/, { message: 'Les caractères < et > ne sont pas autorisés dans le complément.' })
   additionalInfo?: string;
 }

@@ -241,8 +241,9 @@ export class FacturesService {
 
         // Métadonnées Facture
         const factureTitle = type === 'REFUND' ? "FACTURE D'ANNULATION" : "FACTURE";
+        const titleFontSize = type === 'REFUND' ? 14 : 18;
         doc.fillColor(primaryColor)
-           .fontSize(18)
+           .fontSize(titleFontSize)
            .font('Helvetica-Bold')
            .text(factureTitle, 350, 50, { align: 'right', width: 200 });
 
