@@ -28,6 +28,7 @@ export class FacturesService {
             product: {
               include: {
                 seller: true,
+                attributes: { include: { attribute: true } }
               },
             },
           },
@@ -104,7 +105,11 @@ export class FacturesService {
       include: {
         items: {
           include: {
-            product: true,
+            product: {
+              include: {
+                attributes: { include: { attribute: true } }
+              }
+            },
           },
         },
       },
@@ -152,6 +157,7 @@ export class FacturesService {
                 product: {
                   include: {
                     seller: true,
+                    attributes: { include: { attribute: true } }
                   },
                 },
               },
@@ -373,7 +379,7 @@ export class FacturesService {
           doc.fillColor(primaryColor)
              .fontSize(9)
              .font('Helvetica')
-             .text(product.size || '-', 260, currentY + 15, { width: 60, align: 'center' });
+             .text(product.attributes?.map((pa: any) => pa.attribute?.value).filter(Boolean).join(', ') || product.size || '-', 260, currentY + 15, { width: 60, align: 'center' });
 
           // Gestion de l'affichage du prix : prix barré si offre
           if (hasOffer) {

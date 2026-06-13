@@ -40,6 +40,8 @@ async function main() {
   console.log('Nettoyage de la base de donnees...');
   
   // Supprimer dans l'ordre pour respecter les cles etrangeres
+  await prisma.productAttribute.deleteMany();
+  await prisma.attribute.deleteMany();
   await prisma.report.deleteMany();
   await prisma.typeReport.deleteMany();
   await prisma.offer.deleteMany();
@@ -146,8 +148,35 @@ async function main() {
   const catGants = await prisma.category.create({ data: { name: 'Gants', slug: 'gants' } });
   const catCasques = await prisma.category.create({ data: { name: 'Casques', slug: 'casques' } });
   const catProtections = await prisma.category.create({ data: { name: 'Protections', slug: 'protections' } });
+  const catChaussures = await prisma.category.create({ data: { name: 'Chaussures', slug: 'chaussures' } });
+  const catVetements = await prisma.category.create({ data: { name: 'Vêtements', slug: 'vetements' } });
 
   console.log('Categories creees.');
+
+  // 3b. Creation des attributes
+  const gloveSizes = ['8oz', '10oz', '12oz', '14oz', '16oz'];
+  const shoeSizes = ['38', '39', '40', '41', '42', '43', '44', '45'];
+  const clothingSizes = ['XS', 'S', 'M', 'L', 'XL'];
+
+  const seededAttributes: { [key: string]: any } = {};
+
+  for (const val of gloveSizes) {
+    seededAttributes[`size_glove_${val}`] = await prisma.attribute.create({
+      data: { type: 'size_glove', value: val }
+    });
+  }
+  for (const val of shoeSizes) {
+    seededAttributes[`size_shoe_${val}`] = await prisma.attribute.create({
+      data: { type: 'size_shoe', value: val }
+    });
+  }
+  for (const val of clothingSizes) {
+    seededAttributes[`size_clothing_${val}`] = await prisma.attribute.create({
+      data: { type: 'size_clothing', value: val }
+    });
+  }
+
+  console.log('Attributs de taille crees.');
 
   // 4. Creation des 50 produits (repartis entre les 6 utilisateurs non-admins)
   const productTemplates = [
@@ -208,6 +237,16 @@ async function main() {
     { title: 'Bandes Everlast Classic Noir', categoryId: catProtections.id, folder: 'bande', ext: 'jpeg', basePrice: 8, size: '3m' },
     { title: 'Bandes Venum Classic Bleu', categoryId: catProtections.id, folder: 'bande', ext: 'jpeg', basePrice: 10, size: '4m' },
     { title: 'Protege tibias Venum Challenger', categoryId: catProtections.id, folder: 'bande', ext: 'jpeg', basePrice: 55, size: 'M' },
+
+    // --- CHAUSSURES (Catégorie Chaussures) ---
+    { title: 'Chaussures de boxe Adidas Box Hog', categoryId: catChaussures.id, folder: 'bande', ext: 'jpeg', basePrice: 85, size: '42' },
+    { title: 'Chaussures Everlast Elite', categoryId: catChaussures.id, folder: 'bande', ext: 'jpeg', basePrice: 95, size: '43' },
+    { title: 'Chaussures Nike Machomai', categoryId: catChaussures.id, folder: 'bande', ext: 'jpeg', basePrice: 110, size: '41' },
+
+    // --- VÊTEMENTS (Catégorie Vêtements) ---
+    { title: 'Short de boxe Venum Classic', categoryId: catVetements.id, folder: 'bande', ext: 'jpeg', basePrice: 30, size: 'M' },
+    { title: 'T-shirt de compression Under Armour', categoryId: catVetements.id, folder: 'bande', ext: 'jpeg', basePrice: 35, size: 'L' },
+    { title: 'Sweat à capuche Boxing Club', categoryId: catVetements.id, folder: 'bande', ext: 'jpeg', basePrice: 45, size: 'XL' },
   ];
 
   const conditions = ['NEW', 'VERY_GOOD', 'GOOD', 'FAIR'] as const;
@@ -231,13 +270,34 @@ async function main() {
         title: `${template.title} #${i + 1}`,
         description: `Excellent equipement de boxe. Parfait pour l'entrainement quotidien en club. Très confortable et durable dans le temps. Vente cause double emploi.`,
         condition,
-        size: template.size,
         price: finalPrice,
         sellerId: seller.id,
         categoryId: template.categoryId,
         status: 'AVAILABLE'
       }
     });
+
+    // Assigner l'attribut correspondant si la categorie possede des tailles
+    let attrKey = '';
+    if (template.categoryId === catGants.id) {
+      const sizeVal = gloveSizes.includes(template.size || '') ? template.size : '12oz';
+      attrKey = `size_glove_${sizeVal}`;
+    } else if (template.categoryId === catChaussures.id) {
+      const sizeVal = shoeSizes.includes(template.size || '') ? template.size : '42';
+      attrKey = `size_shoe_${sizeVal}`;
+    } else if (template.categoryId === catVetements.id || template.categoryId === catCasques.id) {
+      const sizeVal = clothingSizes.includes(template.size || '') ? template.size : 'M';
+      attrKey = `size_clothing_${sizeVal}`;
+    }
+
+    if (attrKey && seededAttributes[attrKey]) {
+      await prisma.productAttribute.create({
+        data: {
+          productId: product.id,
+          attributeId: seededAttributes[attrKey].id
+        }
+      });
+    }
 
     createdProducts.push(product);
 

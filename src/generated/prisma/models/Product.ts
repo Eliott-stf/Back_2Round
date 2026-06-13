@@ -39,7 +39,6 @@ export type ProductMinAggregateOutputType = {
   title: string | null
   description: string | null
   condition: $Enums.ProductCondition | null
-  size: string | null
   price: number | null
   status: $Enums.ProductStatus | null
   sellerId: string | null
@@ -53,7 +52,6 @@ export type ProductMaxAggregateOutputType = {
   title: string | null
   description: string | null
   condition: $Enums.ProductCondition | null
-  size: string | null
   price: number | null
   status: $Enums.ProductStatus | null
   sellerId: string | null
@@ -67,7 +65,6 @@ export type ProductCountAggregateOutputType = {
   title: number
   description: number
   condition: number
-  size: number
   price: number
   status: number
   sellerId: number
@@ -91,7 +88,6 @@ export type ProductMinAggregateInputType = {
   title?: true
   description?: true
   condition?: true
-  size?: true
   price?: true
   status?: true
   sellerId?: true
@@ -105,7 +101,6 @@ export type ProductMaxAggregateInputType = {
   title?: true
   description?: true
   condition?: true
-  size?: true
   price?: true
   status?: true
   sellerId?: true
@@ -119,7 +114,6 @@ export type ProductCountAggregateInputType = {
   title?: true
   description?: true
   condition?: true
-  size?: true
   price?: true
   status?: true
   sellerId?: true
@@ -220,7 +214,6 @@ export type ProductGroupByOutputType = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size: string | null
   price: number
   status: $Enums.ProductStatus
   sellerId: string
@@ -257,7 +250,6 @@ export type ProductWhereInput = {
   title?: Prisma.StringFilter<"Product"> | string
   description?: Prisma.StringFilter<"Product"> | string
   condition?: Prisma.EnumProductConditionFilter<"Product"> | $Enums.ProductCondition
-  size?: Prisma.StringNullableFilter<"Product"> | string | null
   price?: Prisma.FloatFilter<"Product"> | number
   status?: Prisma.EnumProductStatusFilter<"Product"> | $Enums.ProductStatus
   sellerId?: Prisma.StringFilter<"Product"> | string
@@ -272,6 +264,7 @@ export type ProductWhereInput = {
   offers?: Prisma.OfferListRelationFilter
   favoritedBy?: Prisma.UserProductListRelationFilter
   reports?: Prisma.ReportListRelationFilter
+  attributes?: Prisma.ProductAttributeListRelationFilter
 }
 
 export type ProductOrderByWithRelationInput = {
@@ -279,7 +272,6 @@ export type ProductOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   condition?: Prisma.SortOrder
-  size?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sellerId?: Prisma.SortOrder
@@ -294,6 +286,7 @@ export type ProductOrderByWithRelationInput = {
   offers?: Prisma.OfferOrderByRelationAggregateInput
   favoritedBy?: Prisma.UserProductOrderByRelationAggregateInput
   reports?: Prisma.ReportOrderByRelationAggregateInput
+  attributes?: Prisma.ProductAttributeOrderByRelationAggregateInput
   _relevance?: Prisma.ProductOrderByRelevanceInput
 }
 
@@ -305,7 +298,6 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"Product"> | string
   description?: Prisma.StringFilter<"Product"> | string
   condition?: Prisma.EnumProductConditionFilter<"Product"> | $Enums.ProductCondition
-  size?: Prisma.StringNullableFilter<"Product"> | string | null
   price?: Prisma.FloatFilter<"Product"> | number
   status?: Prisma.EnumProductStatusFilter<"Product"> | $Enums.ProductStatus
   sellerId?: Prisma.StringFilter<"Product"> | string
@@ -320,6 +312,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   offers?: Prisma.OfferListRelationFilter
   favoritedBy?: Prisma.UserProductListRelationFilter
   reports?: Prisma.ReportListRelationFilter
+  attributes?: Prisma.ProductAttributeListRelationFilter
 }, "id">
 
 export type ProductOrderByWithAggregationInput = {
@@ -327,7 +320,6 @@ export type ProductOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   condition?: Prisma.SortOrder
-  size?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sellerId?: Prisma.SortOrder
@@ -349,7 +341,6 @@ export type ProductScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Product"> | string
   description?: Prisma.StringWithAggregatesFilter<"Product"> | string
   condition?: Prisma.EnumProductConditionWithAggregatesFilter<"Product"> | $Enums.ProductCondition
-  size?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   price?: Prisma.FloatWithAggregatesFilter<"Product"> | number
   status?: Prisma.EnumProductStatusWithAggregatesFilter<"Product"> | $Enums.ProductStatus
   sellerId?: Prisma.StringWithAggregatesFilter<"Product"> | string
@@ -363,7 +354,6 @@ export type ProductCreateInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -376,6 +366,7 @@ export type ProductCreateInput = {
   offers?: Prisma.OfferCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateInput = {
@@ -383,7 +374,6 @@ export type ProductUncheckedCreateInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -396,6 +386,7 @@ export type ProductUncheckedCreateInput = {
   offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductUpdateInput = {
@@ -403,7 +394,6 @@ export type ProductUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -416,6 +406,7 @@ export type ProductUpdateInput = {
   offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateInput = {
@@ -423,7 +414,6 @@ export type ProductUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -436,6 +426,7 @@ export type ProductUncheckedUpdateInput = {
   offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUncheckedUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateManyInput = {
@@ -443,7 +434,6 @@ export type ProductCreateManyInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -457,7 +447,6 @@ export type ProductUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -469,7 +458,6 @@ export type ProductUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -509,7 +497,6 @@ export type ProductCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   condition?: Prisma.SortOrder
-  size?: Prisma.SortOrder
   price?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sellerId?: Prisma.SortOrder
@@ -527,7 +514,6 @@ export type ProductMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   condition?: Prisma.SortOrder
-  size?: Prisma.SortOrder
   price?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sellerId?: Prisma.SortOrder
@@ -541,7 +527,6 @@ export type ProductMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   condition?: Prisma.SortOrder
-  size?: Prisma.SortOrder
   price?: Prisma.SortOrder
   status?: Prisma.SortOrder
   sellerId?: Prisma.SortOrder
@@ -690,6 +675,20 @@ export type ProductUpdateOneRequiredWithoutMediasNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutMediasInput, Prisma.ProductUpdateWithoutMediasInput>, Prisma.ProductUncheckedUpdateWithoutMediasInput>
 }
 
+export type ProductCreateNestedOneWithoutAttributesInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutAttributesInput, Prisma.ProductUncheckedCreateWithoutAttributesInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutAttributesInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneRequiredWithoutAttributesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutAttributesInput, Prisma.ProductUncheckedCreateWithoutAttributesInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutAttributesInput
+  upsert?: Prisma.ProductUpsertWithoutAttributesInput
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutAttributesInput, Prisma.ProductUpdateWithoutAttributesInput>, Prisma.ProductUncheckedUpdateWithoutAttributesInput>
+}
+
 export type ProductCreateNestedManyWithoutCategoryInput = {
   create?: Prisma.XOR<Prisma.ProductCreateWithoutCategoryInput, Prisma.ProductUncheckedCreateWithoutCategoryInput> | Prisma.ProductCreateWithoutCategoryInput[] | Prisma.ProductUncheckedCreateWithoutCategoryInput[]
   connectOrCreate?: Prisma.ProductCreateOrConnectWithoutCategoryInput | Prisma.ProductCreateOrConnectWithoutCategoryInput[]
@@ -737,7 +736,6 @@ export type ProductCreateWithoutSellerInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -749,6 +747,7 @@ export type ProductCreateWithoutSellerInput = {
   offers?: Prisma.OfferCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutSellerInput = {
@@ -756,7 +755,6 @@ export type ProductUncheckedCreateWithoutSellerInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   categoryId: string
@@ -768,6 +766,7 @@ export type ProductUncheckedCreateWithoutSellerInput = {
   offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutSellerInput = {
@@ -804,7 +803,6 @@ export type ProductScalarWhereInput = {
   title?: Prisma.StringFilter<"Product"> | string
   description?: Prisma.StringFilter<"Product"> | string
   condition?: Prisma.EnumProductConditionFilter<"Product"> | $Enums.ProductCondition
-  size?: Prisma.StringNullableFilter<"Product"> | string | null
   price?: Prisma.FloatFilter<"Product"> | number
   status?: Prisma.EnumProductStatusFilter<"Product"> | $Enums.ProductStatus
   sellerId?: Prisma.StringFilter<"Product"> | string
@@ -818,7 +816,6 @@ export type ProductCreateWithoutOrderItemsInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -830,6 +827,7 @@ export type ProductCreateWithoutOrderItemsInput = {
   offers?: Prisma.OfferCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutOrderItemsInput = {
@@ -837,7 +835,6 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -849,6 +846,7 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutOrderItemsInput = {
@@ -872,7 +870,6 @@ export type ProductUpdateWithoutOrderItemsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -884,6 +881,7 @@ export type ProductUpdateWithoutOrderItemsInput = {
   offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutOrderItemsInput = {
@@ -891,7 +889,6 @@ export type ProductUncheckedUpdateWithoutOrderItemsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -903,6 +900,7 @@ export type ProductUncheckedUpdateWithoutOrderItemsInput = {
   offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUncheckedUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutConversationsInput = {
@@ -910,7 +908,6 @@ export type ProductCreateWithoutConversationsInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -922,6 +919,7 @@ export type ProductCreateWithoutConversationsInput = {
   offers?: Prisma.OfferCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutConversationsInput = {
@@ -929,7 +927,6 @@ export type ProductUncheckedCreateWithoutConversationsInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -941,6 +938,7 @@ export type ProductUncheckedCreateWithoutConversationsInput = {
   offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutConversationsInput = {
@@ -964,7 +962,6 @@ export type ProductUpdateWithoutConversationsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -976,6 +973,7 @@ export type ProductUpdateWithoutConversationsInput = {
   offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutConversationsInput = {
@@ -983,7 +981,6 @@ export type ProductUncheckedUpdateWithoutConversationsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -995,6 +992,7 @@ export type ProductUncheckedUpdateWithoutConversationsInput = {
   offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUncheckedUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutOffersInput = {
@@ -1002,7 +1000,6 @@ export type ProductCreateWithoutOffersInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -1014,6 +1011,7 @@ export type ProductCreateWithoutOffersInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutOffersInput = {
@@ -1021,7 +1019,6 @@ export type ProductUncheckedCreateWithoutOffersInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -1033,6 +1030,7 @@ export type ProductUncheckedCreateWithoutOffersInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutOffersInput = {
@@ -1056,7 +1054,6 @@ export type ProductUpdateWithoutOffersInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1068,6 +1065,7 @@ export type ProductUpdateWithoutOffersInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutOffersInput = {
@@ -1075,7 +1073,6 @@ export type ProductUncheckedUpdateWithoutOffersInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1087,6 +1084,7 @@ export type ProductUncheckedUpdateWithoutOffersInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUncheckedUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutFavoritedByInput = {
@@ -1094,7 +1092,6 @@ export type ProductCreateWithoutFavoritedByInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -1106,6 +1103,7 @@ export type ProductCreateWithoutFavoritedByInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutProductInput
   offers?: Prisma.OfferCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutFavoritedByInput = {
@@ -1113,7 +1111,6 @@ export type ProductUncheckedCreateWithoutFavoritedByInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -1125,6 +1122,7 @@ export type ProductUncheckedCreateWithoutFavoritedByInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutProductInput
   offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutFavoritedByInput = {
@@ -1148,7 +1146,6 @@ export type ProductUpdateWithoutFavoritedByInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1160,6 +1157,7 @@ export type ProductUpdateWithoutFavoritedByInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutProductNestedInput
   offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutFavoritedByInput = {
@@ -1167,7 +1165,6 @@ export type ProductUncheckedUpdateWithoutFavoritedByInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1179,6 +1176,7 @@ export type ProductUncheckedUpdateWithoutFavoritedByInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutProductNestedInput
   offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutReportsInput = {
@@ -1186,7 +1184,6 @@ export type ProductCreateWithoutReportsInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -1198,6 +1195,7 @@ export type ProductCreateWithoutReportsInput = {
   conversations?: Prisma.ConversationCreateNestedManyWithoutProductInput
   offers?: Prisma.OfferCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutReportsInput = {
@@ -1205,7 +1203,6 @@ export type ProductUncheckedCreateWithoutReportsInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -1217,6 +1214,7 @@ export type ProductUncheckedCreateWithoutReportsInput = {
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutProductInput
   offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutReportsInput = {
@@ -1240,7 +1238,6 @@ export type ProductUpdateWithoutReportsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1252,6 +1249,7 @@ export type ProductUpdateWithoutReportsInput = {
   conversations?: Prisma.ConversationUpdateManyWithoutProductNestedInput
   offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutReportsInput = {
@@ -1259,7 +1257,6 @@ export type ProductUncheckedUpdateWithoutReportsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1271,6 +1268,7 @@ export type ProductUncheckedUpdateWithoutReportsInput = {
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutProductNestedInput
   offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutMediasInput = {
@@ -1278,7 +1276,6 @@ export type ProductCreateWithoutMediasInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -1290,6 +1287,7 @@ export type ProductCreateWithoutMediasInput = {
   offers?: Prisma.OfferCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutMediasInput = {
@@ -1297,7 +1295,6 @@ export type ProductUncheckedCreateWithoutMediasInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -1309,6 +1306,7 @@ export type ProductUncheckedCreateWithoutMediasInput = {
   offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutMediasInput = {
@@ -1332,7 +1330,6 @@ export type ProductUpdateWithoutMediasInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1344,6 +1341,7 @@ export type ProductUpdateWithoutMediasInput = {
   offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutMediasInput = {
@@ -1351,13 +1349,105 @@ export type ProductUncheckedUpdateWithoutMediasInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutProductNestedInput
+  offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
+  favoritedBy?: Prisma.UserProductUncheckedUpdateManyWithoutProductNestedInput
+  reports?: Prisma.ReportUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductCreateWithoutAttributesInput = {
+  id?: string
+  title: string
+  description: string
+  condition: $Enums.ProductCondition
+  price: number
+  status?: $Enums.ProductStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  seller: Prisma.UserCreateNestedOneWithoutProductsInput
+  category: Prisma.CategoryCreateNestedOneWithoutProductsInput
+  medias?: Prisma.MediaCreateNestedManyWithoutProductInput
+  orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutProductInput
+  offers?: Prisma.OfferCreateNestedManyWithoutProductInput
+  favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
+  reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutAttributesInput = {
+  id?: string
+  title: string
+  description: string
+  condition: $Enums.ProductCondition
+  price: number
+  status?: $Enums.ProductStatus
+  sellerId: string
+  categoryId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  medias?: Prisma.MediaUncheckedCreateNestedManyWithoutProductInput
+  orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutProductInput
+  offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
+  favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
+  reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutAttributesInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutAttributesInput, Prisma.ProductUncheckedCreateWithoutAttributesInput>
+}
+
+export type ProductUpsertWithoutAttributesInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutAttributesInput, Prisma.ProductUncheckedUpdateWithoutAttributesInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutAttributesInput, Prisma.ProductUncheckedCreateWithoutAttributesInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutAttributesInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutAttributesInput, Prisma.ProductUncheckedUpdateWithoutAttributesInput>
+}
+
+export type ProductUpdateWithoutAttributesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  seller?: Prisma.UserUpdateOneRequiredWithoutProductsNestedInput
+  category?: Prisma.CategoryUpdateOneRequiredWithoutProductsNestedInput
+  medias?: Prisma.MediaUpdateManyWithoutProductNestedInput
+  orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutProductNestedInput
+  offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
+  favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
+  reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutAttributesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
+  price?: Prisma.FloatFieldUpdateOperationsInput | number
+  status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
+  sellerId?: Prisma.StringFieldUpdateOperationsInput | string
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  medias?: Prisma.MediaUncheckedUpdateManyWithoutProductNestedInput
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutProductNestedInput
   offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
@@ -1370,7 +1460,6 @@ export type ProductCreateWithoutCategoryInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   createdAt?: Date | string
@@ -1382,6 +1471,7 @@ export type ProductCreateWithoutCategoryInput = {
   offers?: Prisma.OfferCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutCategoryInput = {
@@ -1389,7 +1479,6 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -1401,6 +1490,7 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   offers?: Prisma.OfferUncheckedCreateNestedManyWithoutProductInput
   favoritedBy?: Prisma.UserProductUncheckedCreateNestedManyWithoutProductInput
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutProductInput
+  attributes?: Prisma.ProductAttributeUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutCategoryInput = {
@@ -1434,7 +1524,6 @@ export type ProductCreateManySellerInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   categoryId: string
@@ -1447,7 +1536,6 @@ export type ProductUpdateWithoutSellerInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1459,6 +1547,7 @@ export type ProductUpdateWithoutSellerInput = {
   offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutSellerInput = {
@@ -1466,7 +1555,6 @@ export type ProductUncheckedUpdateWithoutSellerInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1478,6 +1566,7 @@ export type ProductUncheckedUpdateWithoutSellerInput = {
   offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUncheckedUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutSellerInput = {
@@ -1485,7 +1574,6 @@ export type ProductUncheckedUpdateManyWithoutSellerInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1498,7 +1586,6 @@ export type ProductCreateManyCategoryInput = {
   title: string
   description: string
   condition: $Enums.ProductCondition
-  size?: string | null
   price: number
   status?: $Enums.ProductStatus
   sellerId: string
@@ -1511,7 +1598,6 @@ export type ProductUpdateWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1523,6 +1609,7 @@ export type ProductUpdateWithoutCategoryInput = {
   offers?: Prisma.OfferUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutCategoryInput = {
@@ -1530,7 +1617,6 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1542,6 +1628,7 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   offers?: Prisma.OfferUncheckedUpdateManyWithoutProductNestedInput
   favoritedBy?: Prisma.UserProductUncheckedUpdateManyWithoutProductNestedInput
   reports?: Prisma.ReportUncheckedUpdateManyWithoutProductNestedInput
+  attributes?: Prisma.ProductAttributeUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateManyWithoutCategoryInput = {
@@ -1549,7 +1636,6 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   condition?: Prisma.EnumProductConditionFieldUpdateOperationsInput | $Enums.ProductCondition
-  size?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.EnumProductStatusFieldUpdateOperationsInput | $Enums.ProductStatus
   sellerId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1569,6 +1655,7 @@ export type ProductCountOutputType = {
   offers: number
   favoritedBy: number
   reports: number
+  attributes: number
 }
 
 export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1578,6 +1665,7 @@ export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   offers?: boolean | ProductCountOutputTypeCountOffersArgs
   favoritedBy?: boolean | ProductCountOutputTypeCountFavoritedByArgs
   reports?: boolean | ProductCountOutputTypeCountReportsArgs
+  attributes?: boolean | ProductCountOutputTypeCountAttributesArgs
 }
 
 /**
@@ -1632,13 +1720,19 @@ export type ProductCountOutputTypeCountReportsArgs<ExtArgs extends runtime.Types
   where?: Prisma.ReportWhereInput
 }
 
+/**
+ * ProductCountOutputType without action
+ */
+export type ProductCountOutputTypeCountAttributesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductAttributeWhereInput
+}
+
 
 export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
   description?: boolean
   condition?: boolean
-  size?: boolean
   price?: boolean
   status?: boolean
   sellerId?: boolean
@@ -1653,6 +1747,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   offers?: boolean | Prisma.Product$offersArgs<ExtArgs>
   favoritedBy?: boolean | Prisma.Product$favoritedByArgs<ExtArgs>
   reports?: boolean | Prisma.Product$reportsArgs<ExtArgs>
+  attributes?: boolean | Prisma.Product$attributesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
 
@@ -1663,7 +1758,6 @@ export type ProductSelectScalar = {
   title?: boolean
   description?: boolean
   condition?: boolean
-  size?: boolean
   price?: boolean
   status?: boolean
   sellerId?: boolean
@@ -1672,7 +1766,7 @@ export type ProductSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "condition" | "size" | "price" | "status" | "sellerId" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "condition" | "price" | "status" | "sellerId" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   seller?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1682,6 +1776,7 @@ export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   offers?: boolean | Prisma.Product$offersArgs<ExtArgs>
   favoritedBy?: boolean | Prisma.Product$favoritedByArgs<ExtArgs>
   reports?: boolean | Prisma.Product$reportsArgs<ExtArgs>
+  attributes?: boolean | Prisma.Product$attributesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -1696,13 +1791,13 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     offers: Prisma.$OfferPayload<ExtArgs>[]
     favoritedBy: Prisma.$UserProductPayload<ExtArgs>[]
     reports: Prisma.$ReportPayload<ExtArgs>[]
+    attributes: Prisma.$ProductAttributePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
     description: string
     condition: $Enums.ProductCondition
-    size: string | null
     price: number
     status: $Enums.ProductStatus
     sellerId: string
@@ -2057,6 +2152,7 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
   offers<T extends Prisma.Product$offersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$offersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OfferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   favoritedBy<T extends Prisma.Product$favoritedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$favoritedByArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reports<T extends Prisma.Product$reportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  attributes<T extends Prisma.Product$attributesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$attributesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductAttributePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2090,7 +2186,6 @@ export interface ProductFieldRefs {
   readonly title: Prisma.FieldRef<"Product", 'String'>
   readonly description: Prisma.FieldRef<"Product", 'String'>
   readonly condition: Prisma.FieldRef<"Product", 'ProductCondition'>
-  readonly size: Prisma.FieldRef<"Product", 'String'>
   readonly price: Prisma.FieldRef<"Product", 'Float'>
   readonly status: Prisma.FieldRef<"Product", 'ProductStatus'>
   readonly sellerId: Prisma.FieldRef<"Product", 'String'>
@@ -2586,6 +2681,30 @@ export type Product$reportsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.ReportScalarFieldEnum | Prisma.ReportScalarFieldEnum[]
+}
+
+/**
+ * Product.attributes
+ */
+export type Product$attributesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductAttribute
+   */
+  select?: Prisma.ProductAttributeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductAttribute
+   */
+  omit?: Prisma.ProductAttributeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductAttributeInclude<ExtArgs> | null
+  where?: Prisma.ProductAttributeWhereInput
+  orderBy?: Prisma.ProductAttributeOrderByWithRelationInput | Prisma.ProductAttributeOrderByWithRelationInput[]
+  cursor?: Prisma.ProductAttributeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductAttributeScalarFieldEnum | Prisma.ProductAttributeScalarFieldEnum[]
 }
 
 /**

@@ -20,10 +20,8 @@ export class UpdateProductDto {
   condition?: ProductCondition;
 
   @IsOptional()
-  @IsString({ message: 'Veuillez renseigner une taille valide.' })
-  @MaxLength(20, { message: 'Veuillez renseigner une taille valide.' })
-  @Matches(/^[a-zA-Z0-9\s-]+$/, { message: 'Veuillez renseigner une taille valide.' })
-  size?: string;
+  @IsUUID('all', { each: true, message: 'Les attributs fournis sont invalides.' })
+  attributeIds?: string[];
 
   @IsOptional()
   @IsNumber({}, { message: 'Veuillez renseigner un prix valide.' })

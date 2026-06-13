@@ -13,7 +13,7 @@ export class FilterProductDto {
 
   @IsOptional()
   @IsString()
-  size?: string;
+  attributeId?: string;
 
   @IsOptional()
   @IsEnum(ProductCondition)

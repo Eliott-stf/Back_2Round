@@ -68,6 +68,8 @@ export const ModelName = {
   TypeReport: 'TypeReport',
   Product: 'Product',
   Media: 'Media',
+  Attribute: 'Attribute',
+  ProductAttribute: 'ProductAttribute',
   Category: 'Category'
 } as const
 
@@ -280,7 +282,6 @@ export const ProductScalarFieldEnum = {
   title: 'title',
   description: 'description',
   condition: 'condition',
-  size: 'size',
   price: 'price',
   status: 'status',
   sellerId: 'sellerId',
@@ -299,6 +300,23 @@ export const MediaScalarFieldEnum = {
 } as const
 
 export type MediaScalarFieldEnum = (typeof MediaScalarFieldEnum)[keyof typeof MediaScalarFieldEnum]
+
+
+export const AttributeScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  value: 'value'
+} as const
+
+export type AttributeScalarFieldEnum = (typeof AttributeScalarFieldEnum)[keyof typeof AttributeScalarFieldEnum]
+
+
+export const ProductAttributeScalarFieldEnum = {
+  productId: 'productId',
+  attributeId: 'attributeId'
+} as const
+
+export type ProductAttributeScalarFieldEnum = (typeof ProductAttributeScalarFieldEnum)[keyof typeof ProductAttributeScalarFieldEnum]
 
 
 export const CategoryScalarFieldEnum = {
@@ -483,7 +501,6 @@ export const ProductOrderByRelevanceFieldEnum = {
   id: 'id',
   title: 'title',
   description: 'description',
-  size: 'size',
   sellerId: 'sellerId',
   categoryId: 'categoryId'
 } as const
@@ -498,6 +515,23 @@ export const MediaOrderByRelevanceFieldEnum = {
 } as const
 
 export type MediaOrderByRelevanceFieldEnum = (typeof MediaOrderByRelevanceFieldEnum)[keyof typeof MediaOrderByRelevanceFieldEnum]
+
+
+export const AttributeOrderByRelevanceFieldEnum = {
+  id: 'id',
+  type: 'type',
+  value: 'value'
+} as const
+
+export type AttributeOrderByRelevanceFieldEnum = (typeof AttributeOrderByRelevanceFieldEnum)[keyof typeof AttributeOrderByRelevanceFieldEnum]
+
+
+export const ProductAttributeOrderByRelevanceFieldEnum = {
+  productId: 'productId',
+  attributeId: 'attributeId'
+} as const
+
+export type ProductAttributeOrderByRelevanceFieldEnum = (typeof ProductAttributeOrderByRelevanceFieldEnum)[keyof typeof ProductAttributeOrderByRelevanceFieldEnum]
 
 
 export const CategoryOrderByRelevanceFieldEnum = {

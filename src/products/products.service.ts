@@ -76,7 +76,7 @@ export class ProductsService {
    * @returns Un objet contenant les produits correspondants
    */
   async findAll(filters: FilterProductDto) {
-    const { search, categoryId, size, condition, minPrice, maxPrice, page = 1, limit = 20, sellerId, status } = filters;
+    const { search, categoryId, attributeId, condition, minPrice, maxPrice, page = 1, limit = 20, sellerId, status } = filters;
 
     const where: any = {
       status: status ? status : (sellerId ? { in: ['AVAILABLE', 'ARCHIVED'] } : 'AVAILABLE'),
@@ -88,7 +88,13 @@ export class ProductsService {
         ],
       }),
       ...(categoryId && { categoryId }),
-      ...(size && { size }),
+      ...(attributeId && {
+        attributes: {
+          some: {
+            attributeId
+          }
+        }
+      }),
       ...(condition && { condition }),
       ...((minPrice || maxPrice) && {
         price: {
@@ -105,6 +111,11 @@ export class ProductsService {
         include: {
           medias: true,
           category: true,
+          attributes: {
+            include: {
+              attribute: true
+            }
+          },
           seller: {
             select: {
               id: true,
@@ -141,6 +152,11 @@ export class ProductsService {
       include: {
         medias: true,
         category: true,
+        attributes: {
+          include: {
+            attribute: true
+          }
+        },
         seller: {
           select: {
             id: true,
@@ -172,6 +188,11 @@ export class ProductsService {
       include: {
         medias: true,
         category: true,
+        attributes: {
+          include: {
+            attribute: true
+          }
+        },
         seller: {
           select: {
             id: true,
@@ -197,7 +218,11 @@ export class ProductsService {
         title: true,
         description: true,
         condition: true,
-        size: true,
+        attributes: {
+          select: {
+            attribute: true
+          }
+        },
         price: true,
         updatedAt: true,
       },
@@ -218,6 +243,11 @@ export class ProductsService {
       include: {
         medias: true,
         category: true,
+        attributes: {
+          include: {
+            attribute: true
+          }
+        },
         seller: {
           select: {
             id: true,
@@ -242,24 +272,42 @@ export class ProductsService {
    * @returns {Promise<{message: string}>} Un objet contenant un message de succès.
    */
   async create(userId: string, dto: CreateProductDto) {
+    const { attributeIds, ...rest } = dto;
     const product = await this.prisma.product.create({
       data: {
-        title: dto.title,
-        description: dto.description,
-        condition: dto.condition,
-        size: dto.size,
-        price: dto.price,
+        title: rest.title,
+        description: rest.description,
+        condition: rest.condition,
+        price: rest.price,
         sellerId: userId,
-        categoryId: dto.categoryId,
-      },
-      include: {
-        medias: true,
-        category: true,
+        categoryId: rest.categoryId,
       },
     });
 
+    if (attributeIds && attributeIds.length > 0) {
+      await this.prisma.productAttribute.createMany({
+        data: attributeIds.map(attrId => ({
+          productId: product.id,
+          attributeId: attrId
+        }))
+      });
+    }
+
+    const fullProduct = await this.prisma.product.findUnique({
+      where: { id: product.id },
+      include: {
+        medias: true,
+        category: true,
+        attributes: {
+          include: {
+            attribute: true
+          }
+        }
+      }
+    });
+
     // Gestion du pack virtuel : passer les sous-produits au statut PENDING
-    const match = dto.description?.match(/\[PACK:([^\]]+)\]/);
+    const match = rest.description?.match(/\[PACK:([^\]]+)\]/);
     if (match && match[1]) {
       const ids = match[1].split(',').map((id: string) => id.trim()).filter(Boolean);
       if (ids.length > 0) {
@@ -275,7 +323,7 @@ export class ProductsService {
       }
     }
 
-    return this.populateVirtualPack(product);
+    return this.populateVirtualPack(fullProduct);
   }
 
   /**
@@ -286,17 +334,45 @@ export class ProductsService {
    * @return message
    */
   async update(userId: string, productId: string, dto: UpdateProductDto) {
+    const { attributeIds, ...rest } = dto;
 
     //On vérifie que l'user modifie SON produit 
     await this.checkOwnership(userId, productId);
 
-    const updated = await this.prisma.product.update({
+    await this.prisma.product.update({
       where: { id: productId },
-      data: dto,
-      include: { medias: true, category: true },
+      data: rest,
     });
 
-    return this.populateVirtualPack(updated);
+    if (attributeIds) {
+      await this.prisma.productAttribute.deleteMany({
+        where: { productId }
+      });
+
+      if (attributeIds.length > 0) {
+        await this.prisma.productAttribute.createMany({
+          data: attributeIds.map(attrId => ({
+            productId,
+            attributeId: attrId
+          }))
+        });
+      }
+    }
+
+    const fullProduct = await this.prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        medias: true,
+        category: true,
+        attributes: {
+          include: {
+            attribute: true
+          }
+        }
+      }
+    });
+
+    return this.populateVirtualPack(fullProduct);
   }
 
   /**

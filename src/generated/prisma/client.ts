@@ -125,6 +125,16 @@ export type Product = Prisma.ProductModel
  */
 export type Media = Prisma.MediaModel
 /**
+ * Model Attribute
+ * 
+ */
+export type Attribute = Prisma.AttributeModel
+/**
+ * Model ProductAttribute
+ * 
+ */
+export type ProductAttribute = Prisma.ProductAttributeModel
+/**
  * Model Category
  * 
  */

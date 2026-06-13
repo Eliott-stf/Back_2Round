@@ -23,6 +23,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { PaymentsModule } from './payments/payments.module';
 import { FacturesModule } from './factures/factures.module';
 import { WebsocketModule } from './websocket/websocket.module';
+import { AttributesModule } from './attributes/attributes.module';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { WebsocketModule } from './websocket/websocket.module';
       ttl: 60000,
       limit: 150,
     }]),
-    PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule, BankAccountModule, PaymentsModule, FacturesModule, WebsocketModule],
+    PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule, BankAccountModule, PaymentsModule, FacturesModule, WebsocketModule, AttributesModule],
   controllers: [AppController],
   providers: [
     AppService,

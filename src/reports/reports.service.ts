@@ -71,6 +71,7 @@ export class ReportsService {
           include: {
             seller: true,
             medias: true,
+            attributes: { include: { attribute: true } }
           }
         },
         conversation: {
@@ -79,6 +80,7 @@ export class ReportsService {
             product: {
               include: {
                 seller: true,
+                attributes: { include: { attribute: true } }
               }
             },
             messages: {
