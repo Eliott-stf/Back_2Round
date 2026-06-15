@@ -29,7 +29,7 @@ import { AttributesModule } from './attributes/attributes.module';
   imports: [
     ThrottlerModule.forRoot([{
       ttl: 60000,
-      limit: 150,
+      limit: 300,
     }]),
     PrismaModule, UsersModule, AuthModule, ProductsModule, CategoriesModule, OrdersModule, OffersModule, WalletModule, ConversationsModule, MessagesModule, ReviewsModule, ReportsModule, MediaModule, TypeReportsModule, TransactionsModule, AddressModule, BankAccountModule, PaymentsModule, FacturesModule, WebsocketModule, AttributesModule],
   controllers: [AppController],

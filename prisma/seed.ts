@@ -65,8 +65,11 @@ async function main() {
   console.log('Debut du seed enrichi...');
 
   const hashedPassword = await bcrypt.hash('password123', 10);
+  const hashedJulien = await bcrypt.hash('Julien@2025', 10);
+  const hashedSebastien = await bcrypt.hash('faure@2025', 10);
+  const hashedEliott = await bcrypt.hash('Eliott@2025', 10);
 
-  // 1. Creation des 7 utilisateurs (dont John, Mike et Admin)
+  // 1. Creation des 10 utilisateurs (dont John, Mike, Admin et les 3 nouveaux)
   const usersData = [
     { name: 'John', lastname: 'Doe', email: 'john@test.com', password: hashedPassword, role: 'USER' as const, boxingType: 'Muay Thai', weight: 75, height: 180 },
     { name: 'Mike', lastname: 'Tyson', email: 'mike@2round.com', password: hashedPassword, role: 'USER' as const, boxingType: 'Boxe Anglaise', weight: 95, height: 178 },
@@ -75,6 +78,9 @@ async function main() {
     { name: 'Tony', lastname: 'Montana', email: 'tony@test.com', password: hashedPassword, role: 'USER' as const, boxingType: 'Boxe Anglaise', weight: 81, height: 175 },
     { name: 'Ali', lastname: 'Clay', email: 'ali@test.com', password: hashedPassword, role: 'USER' as const, boxingType: 'Boxe Anglaise', weight: 98, height: 191 },
     { name: 'Leila', lastname: 'Amara', email: 'leila@test.com', password: hashedPassword, role: 'USER' as const, boxingType: 'Krav Maga', weight: 55, height: 165 },
+    { name: 'Julien', lastname: 'Linard', email: 'julien@linard.com', password: hashedJulien, role: 'ADMIN' as const, boxingType: 'Boxe Anglaise', weight: 70, height: 175 },
+    { name: 'Sebastien', lastname: 'Faure', email: 'sebastien@faure.com', password: hashedSebastien, role: 'ADMIN' as const, boxingType: 'Kickboxing', weight: 85, height: 182 },
+    { name: 'Eliott', lastname: 'Setif', email: 'eliott@setif.com', password: hashedEliott, role: 'ADMIN' as const, boxingType: 'Muay Thai', weight: 78, height: 180 },
   ];
 
   const createdUsers: any[] = [];
@@ -82,19 +88,22 @@ async function main() {
     const user = await prisma.user.create({ data: u });
     createdUsers.push(user);
   }
-  console.log('7 Utilisateurs crees.');
+  console.log('10 Utilisateurs crees.');
 
   // Separation des roles pour faciliter la suite
   const john = createdUsers.find(u => u.email === 'john@test.com')!;
   const mike = createdUsers.find(u => u.email === 'mike@2round.com')!;
   const admin = createdUsers.find(u => u.email === 'admin@2round.com')!;
+  const julien = createdUsers.find(u => u.email === 'julien@linard.com')!;
+  const sebastien = createdUsers.find(u => u.email === 'sebastien@faure.com')!;
+  const eliott = createdUsers.find(u => u.email === 'eliott@setif.com')!;
   const otherUsers = createdUsers.filter(u => u.id !== admin.id);
 
   // 2. Wallets, Transactions, Adresses et Comptes bancaires pour tous les utilisateurs
   const createdWallets: any[] = [];
   for (let i = 0; i < createdUsers.length; i++) {
     const user = createdUsers[i];
-    const balance = user.role === 'ADMIN' ? 0 : (100 + i * 150);
+    const balance = (user.role === 'ADMIN' && user.email === 'admin@2round.com') ? 0 : (100 + i * 150);
     
     // Wallet
     const wallet = await prisma.wallet.create({
@@ -324,6 +333,50 @@ async function main() {
 
   console.log('50 Produits et leurs medias associes crees.');
 
+  // 4b. Création de 5 produits spécifiques pour les 3 nouveaux utilisateurs
+  const newProductsData = [
+    { title: 'Gants Reyes Pro Julien', price: 150, sellerId: julien.id, categoryId: catGants.id, condition: 'VERY_GOOD' as const, imgFolder: 'gant', imgName: '2.jpeg', attrKey: `size_glove_14oz` },
+    { title: 'Casque Protect Julien', price: 80, sellerId: julien.id, categoryId: catCasques.id, condition: 'NEW' as const, imgFolder: 'casque', imgName: '1.jpeg', attrKey: `size_clothing_M` },
+    { title: 'Chaussures Adidas Sebastien', price: 90, sellerId: sebastien.id, categoryId: catChaussures.id, condition: 'GOOD' as const, imgFolder: 'bande', imgName: '1.jpeg', attrKey: `size_shoe_43` },
+    { title: 'Short Venum Sebastien', price: 25, sellerId: sebastien.id, categoryId: catVetements.id, condition: 'VERY_GOOD' as const, imgFolder: 'bande', imgName: '2.jpeg', attrKey: `size_clothing_L` },
+    { title: 'Protege tibias Eliott', price: 40, sellerId: eliott.id, categoryId: catProtections.id, condition: 'NEW' as const, imgFolder: 'bande', imgName: '3.jpeg', attrKey: `size_clothing_M` },
+  ];
+
+  const newProducts: any[] = [];
+  for (const p of newProductsData) {
+    const product = await prisma.product.create({
+      data: {
+        title: p.title,
+        description: `Excellent equipement de boxe. Parfait pour l'entrainement quotidien en club. Très confortable et durable dans le temps. Vente cause double emploi.`,
+        condition: p.condition,
+        price: p.price,
+        sellerId: p.sellerId,
+        categoryId: p.categoryId,
+        status: 'AVAILABLE'
+      }
+    });
+
+    if (p.attrKey && seededAttributes[p.attrKey]) {
+      await prisma.productAttribute.create({
+        data: {
+          productId: product.id,
+          attributeId: seededAttributes[p.attrKey].id
+        }
+      });
+    }
+
+    const imgPath = `/images/${p.imgFolder}/${p.imgName}`;
+    await prisma.media.create({
+      data: {
+        path: imgPath,
+        productId: product.id
+      }
+    });
+
+    newProducts.push(product);
+  }
+  console.log('5 Produits spécifiques créés pour les nouveaux utilisateurs.');
+
   // 5. Simulation de Transactions d'Achat (Commandes, Factures, Avis)
   // On va creer 6 commandes completes de produits pour illustrer le systeme de vente
   const orderData = [
@@ -505,6 +558,178 @@ async function main() {
       status: 'OPEN',
       userId: mike.id,
       productId: createdProducts[7].id,
+      typeReportId: typeArnaque.id
+    }
+  });
+
+  // 9. Données spécifiques pour les nouveaux utilisateurs (commandes, reviews, favoris, conversations, report)
+  // 3 commandes et 2 reviews
+  const newOrderData = [
+    { buyer: julien, seller: sebastien, product: newProducts[2], reviewRating: 5, reviewComment: "Super vendeur, envoi soigné !" },
+    { buyer: sebastien, seller: eliott, product: newProducts[4], reviewRating: 4, reviewComment: "Conforme à la description, merci." },
+    { buyer: eliott, seller: julien, product: newProducts[0] }, // Pas de review pour celle-ci (2 reviews au total demandées)
+  ];
+
+  for (let idx = 0; idx < newOrderData.length; idx++) {
+    const data = newOrderData[idx];
+    const buyer = data.buyer;
+    const seller = data.seller;
+    const product = data.product;
+
+    const shippingAddr = await prisma.address.findFirst({ where: { userId: buyer.id, type: 'SHIPPING' } });
+    const billingAddr = await prisma.address.findFirst({ where: { userId: buyer.id, type: 'BILLING' } });
+
+    const order = await prisma.order.create({
+      data: {
+        reference: `2R-${Date.now()}-NEW-${idx + 1}`,
+        status: 'PAID',
+        totalAmount: product.price,
+        buyerId: buyer.id,
+        shippingAddressId: shippingAddr!.id,
+        billingAddressId: billingAddr!.id,
+      }
+    });
+
+    await prisma.product.update({
+      where: { id: product.id },
+      data: { status: 'ARCHIVED' }
+    });
+
+    await prisma.orderItem.create({
+      data: {
+        quantity: 1,
+        unitPriceAtPurchase: product.price,
+        orderId: order.id,
+        productId: product.id
+      }
+    });
+
+    const buyerWallet = await prisma.wallet.findUnique({ where: { userId: buyer.id } });
+    await prisma.wallet.update({
+      where: { id: buyerWallet!.id },
+      data: { balance: { decrement: product.price } }
+    });
+
+    await prisma.transaction.create({
+      data: {
+        amount: product.price,
+        type: 'DEBIT',
+        description: `Achat commande ${order.reference}`,
+        walletId: buyerWallet!.id,
+        orderId: order.id,
+      }
+    });
+
+    const sellerWallet = await prisma.wallet.findUnique({ where: { userId: seller.id } });
+    await prisma.wallet.update({
+      where: { id: sellerWallet!.id },
+      data: { balance: { increment: product.price } }
+    });
+
+    await prisma.transaction.create({
+      data: {
+        amount: product.price,
+        type: 'CREDIT',
+        description: `Vente commande ${order.reference}`,
+        walletId: sellerWallet!.id,
+        orderId: order.id,
+      }
+    });
+
+    await prisma.facture.create({
+      data: {
+        reference: `FAC-${Date.now()}-NEW-${idx + 1}`,
+        client: `${buyer.name} ${buyer.lastname}`,
+        path: `/uploads/factures/FAC-NEW-${idx + 1}.pdf`,
+        orderId: order.id
+      }
+    });
+
+    if (data.reviewRating) {
+      await prisma.review.create({
+        data: {
+          rating: data.reviewRating,
+          comment: data.reviewComment,
+          orderId: order.id
+        }
+      });
+    }
+  }
+
+  // 5 favoris (uniquement des produits non vendus / AVAILABLE)
+  await prisma.userProduct.createMany({
+    data: [
+      { userId: julien.id, productId: createdProducts[6].id }, // Gants Twins Special Cuir (AVAILABLE)
+      { userId: julien.id, productId: createdProducts[8].id }, // Gants Leone 1947 Shock (AVAILABLE)
+      { userId: sebastien.id, productId: createdProducts[9].id }, // Gants de combat Ringhorns (AVAILABLE)
+      { userId: sebastien.id, productId: newProducts[1].id }, // Casque Protect Julien (AVAILABLE)
+      { userId: eliott.id, productId: newProducts[3].id }, // Short Venum Sebastien (AVAILABLE)
+    ]
+  });
+
+  // Conversations, messages et offres avec d'autres utilisateurs
+  const convJulienMike = await prisma.conversation.create({
+    data: {
+      productId: createdProducts[10].id,
+      buyerId: julien.id
+    }
+  });
+  await prisma.message.createMany({
+    data: [
+      { content: "Salut Mike, ton équipement m'intéresse beaucoup !", senderId: julien.id, conversationId: convJulienMike.id },
+      { content: "Salut Julien, pas de soucis, il est en très bon état.", senderId: mike.id, conversationId: convJulienMike.id },
+    ]
+  });
+  await prisma.offer.create({
+    data: {
+      proposedPrice: createdProducts[10].price - 10,
+      status: 'PENDING',
+      conversationId: convJulienMike.id,
+      productId: createdProducts[10].id
+    }
+  });
+
+  const convSebJohn = await prisma.conversation.create({
+    data: {
+      productId: createdProducts[11].id,
+      buyerId: sebastien.id
+    }
+  });
+  await prisma.message.createMany({
+    data: [
+      { content: "Bonjour John, une baisse de prix est possible ?", senderId: sebastien.id, conversationId: convSebJohn.id },
+      { content: "Bonjour, oui propose un prix et on verra !", senderId: john.id, conversationId: convSebJohn.id },
+    ]
+  });
+  await prisma.offer.create({
+    data: {
+      proposedPrice: createdProducts[11].price - 5,
+      status: 'PENDING',
+      conversationId: convSebJohn.id,
+      productId: createdProducts[11].id
+    }
+  });
+
+  const convEliottJulien = await prisma.conversation.create({
+    data: {
+      productId: newProducts[1].id,
+      buyerId: eliott.id
+    }
+  });
+  await prisma.message.createMany({
+    data: [
+      { content: "Salut Julien, ton casque m'intéresse.", senderId: eliott.id, conversationId: convEliottJulien.id },
+      { content: "Salut Eliott, nickel, dis-moi si tu veux le prendre.", senderId: julien.id, conversationId: convEliottJulien.id },
+    ]
+  });
+
+  // 1 report
+  await prisma.report.create({
+    data: {
+      content: 'Le titre ne correspond pas aux photos.',
+      status: 'OPEN',
+      userId: eliott.id,
+      productId: newProducts[2].id,
       typeReportId: typeArnaque.id
     }
   });
