@@ -65,9 +65,9 @@ async function main() {
   console.log('Debut du seed enrichi...');
 
   const hashedPassword = await bcrypt.hash('password123', 10);
-  const hashedJulien = await bcrypt.hash('Julien@2025', 10);
-  const hashedSebastien = await bcrypt.hash('faure@2025', 10);
-  const hashedEliott = await bcrypt.hash('Eliott@2025', 10);
+  const hashedJulien = await bcrypt.hash('Julien@2026', 10);
+  const hashedSebastien = await bcrypt.hash('Sebastien@2026', 10);
+  const hashedEliott = await bcrypt.hash('Eliott@2026', 10);
 
   // 1. Creation des 10 utilisateurs (dont John, Mike, Admin et les 3 nouveaux)
   const usersData = [
